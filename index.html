@@ -269,7 +269,7 @@
         thead {
             position: sticky;
             top: 0;
-            z-index: 30;
+            z-index: 10;
         }
         th {
             background-color: var(--ontime-purple);
@@ -283,26 +283,26 @@
         tr:first-child th {
             position: sticky;
             top: 0;
-            z-index: 35;
+            z-index: 15;
         }
         /* Segunda linha do cabeçalho (RB/Custo) */
         tr:nth-child(2) th {
             position: sticky;
             top: 44px; /* altura da primeira linha */
-            z-index: 35;
+            z-index: 15;
         }
-        /* Colunas fixas - cabeçalho */
-        th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4) {
-            position: sticky;
-            left: 0;
-            z-index: 40;
-            background-color: var(--ontime-purple);
+        /* Remove sticky das primeiras colunas */
+        th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4),
+        td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4) {
+            position: static;
+            left: auto;
+            z-index: auto;
         }
-        /* Larguras fixas para as colunas fixas (ajuste conforme necessário) */
-        th:nth-child(1) { left: 0; width: 120px; }
-        th:nth-child(2) { left: 120px; width: 150px; }
-        th:nth-child(3) { left: 270px; width: 120px; }
-        th:nth-child(4) { left: 390px; width: 100px; }
+        /* Ajuste de largura mínima para colunas fixas (agora não fixas) */
+        th:nth-child(1), td:nth-child(1) { min-width: 120px; }
+        th:nth-child(2), td:nth-child(2) { min-width: 150px; }
+        th:nth-child(3), td:nth-child(3) { min-width: 120px; }
+        th:nth-child(4), td:nth-child(4) { min-width: 100px; }
 
         td {
             padding: 10px 8px;
@@ -311,18 +311,6 @@
             white-space: nowrap;
             background-color: white;
         }
-        /* Colunas fixas - dados */
-        td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4) {
-            position: sticky;
-            left: 0;
-            z-index: 20;
-            background-color: white;
-        }
-        td:nth-child(1) { left: 0; width: 120px; }
-        td:nth-child(2) { left: 120px; width: 150px; }
-        td:nth-child(3) { left: 270px; width: 120px; }
-        td:nth-child(4) { left: 390px; width: 100px; }
-
         /* Linhas verticais separadoras entre meses (a partir da 5ª coluna) */
         th:nth-child(n+5),
         td:nth-child(n+5) {
@@ -519,7 +507,7 @@
         </div>
     </div>
 
-    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v28.0</footer>
+    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v29.0</footer>
 </div>
 
 <script>
@@ -1043,7 +1031,7 @@
 
         // Cabeçalho: primeira linha com os meses (colspan=2)
         let thead = '<tr>';
-        thead += '<th style="width:120px;">Código C.C.</th><th style="width:150px;">Centro de Custo</th><th style="width:120px;">Subnegócio</th><th style="width:100px;">Cliente</th>';
+        thead += '<th>Código C.C.</th><th>Centro de Custo</th><th>Subnegócio</th><th>Cliente</th>';
         mesesLista.forEach(m => {
             thead += `<th colspan="2" class="mes-header">${m}</th>`;
         });
@@ -1073,7 +1061,7 @@
 
         let tbody = '';
         Object.values(grupos).forEach(g => {
-            let linha = `<tr><td style="width:120px;">${g.cc}</td><td style="width:150px;">${g.centro}</td><td style="width:120px;">${g.sub}</td><td style="width:100px;">${g.cliente}</td>`;
+            let linha = `<tr><td>${g.cc}</td><td>${g.centro}</td><td>${g.sub}</td><td>${g.cliente}</td>`;
             mesesLista.forEach((m, index) => {
                 const valores = g.meses[m] || { rb: 0, custo: 0 };
                 const classeCelula = index % 2 === 0 ? 'grupo-mes-par' : 'grupo-mes-impar';

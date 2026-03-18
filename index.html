@@ -246,14 +246,14 @@
         }
         .tabela-container {
             overflow-x: auto;
+            overflow-y: auto;
+            max-height: 600px;
             background: var(--bg-card);
             border-radius: 24px;
             padding: 0;
             border: 1px solid var(--border-color);
             margin-bottom: 30px;
             transition: box-shadow var(--transition-speed);
-            max-height: 600px;
-            overflow-y: auto;
             position: relative;
         }
         .tabela-container:hover {
@@ -265,51 +265,61 @@
             font-size: 14px;
             min-width: 800px;
         }
-        th {
-            text-align: left;
-            padding: 12px 8px;
-            color: white;
-            font-weight: 700;
-            border-bottom: 2px solid var(--border-color);
-            background-color: var(--ontime-purple);
+        /* Cabeçalho fixo */
+        thead {
             position: sticky;
             top: 0;
-            z-index: 20;
+            z-index: 30;
         }
-        /* Fixar as primeiras quatro colunas horizontalmente */
-        th:nth-child(1),
-        th:nth-child(2),
-        th:nth-child(3),
-        th:nth-child(4) {
+        th {
+            background-color: var(--ontime-purple);
+            color: white;
+            padding: 12px 8px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-color);
+            white-space: nowrap;
+        }
+        /* Ajuste para a primeira linha de cabeçalho (meses) */
+        tr:first-child th {
+            position: sticky;
+            top: 0;
+            z-index: 35;
+        }
+        /* Segunda linha de cabeçalho (RB/Custo) */
+        tr:nth-child(2) th {
+            position: sticky;
+            top: 44px; /* altura aproximada da primeira linha */
+            z-index: 35;
+        }
+        /* Colunas fixadas (primeiras 4) nos cabeçalhos */
+        th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4) {
             position: sticky;
             left: 0;
-            z-index: 25;
+            z-index: 40;
             background-color: var(--ontime-purple);
         }
-        th:nth-child(2) { left: 120px; } /* Ajuste conforme largura das colunas */
+        th:nth-child(2) { left: 120px; }
         th:nth-child(3) { left: 240px; }
         th:nth-child(4) { left: 360px; }
-        
+
         td {
             padding: 10px 8px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
             white-space: nowrap;
+            background-color: white;
         }
-        /* Fixar as primeiras quatro colunas nas linhas de dados */
-        td:nth-child(1),
-        td:nth-child(2),
-        td:nth-child(3),
-        td:nth-child(4) {
+        /* Colunas fixadas nas células de dados */
+        td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4) {
             position: sticky;
             left: 0;
-            z-index: 15;
+            z-index: 20;
             background-color: white;
         }
         td:nth-child(2) { left: 120px; }
         td:nth-child(3) { left: 240px; }
         td:nth-child(4) { left: 360px; }
-        
+
         /* Linhas verticais separadoras entre meses */
         th:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)),
         td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) {
@@ -429,7 +439,6 @@
         </div>
 
         <div class="kpis">
-            <!-- Ordem: Receita Bruta, Custo Total, Margem Média, Receita MELI -->
             <div class="kpi-card">
                 <h3>Receita Bruta</h3>
                 <div class="valor" id="rbTotal">R$ 0</div>
@@ -507,7 +516,7 @@
         </div>
     </div>
 
-    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v25.0</footer>
+    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v27.0</footer>
 </div>
 
 <script>
@@ -646,12 +655,7 @@
 
     function getGridColor() { return 'rgba(60,0,60,0.2)'; }
 
-    function formatarValor(valor) {
-        if (valor >= 1e6) return 'R$ ' + (valor / 1e6).toFixed(1) + ' Mi';
-        if (valor >= 1e3) return 'R$ ' + (valor / 1e3).toFixed(0) + ' mil';
-        return 'R$ ' + valor.toFixed(0);
-    }
-
+    // Formatação para números inteiros com separadores de milhar
     function formatarNumeroInteiro(valor) {
         return valor.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
@@ -721,8 +725,8 @@
             data: {
                 labels: mesesOrdenados,
                 datasets: [
-                    { label: 'Receita (R$)', data: receitaMensal, backgroundColor: '#3C003C', borderRadius: 6 },
-                    { label: 'Custo (R$)', data: custoMensal, backgroundColor: '#FF6E00', borderRadius: 6 }
+                    { label: 'Receita', data: receitaMensal, backgroundColor: '#3C003C', borderRadius: 6 },
+                    { label: 'Custo', data: custoMensal, backgroundColor: '#FF6E00', borderRadius: 6 }
                 ]
             },
             options: {
@@ -730,12 +734,16 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: R$ ${ctx.raw.toLocaleString('pt-BR')}` } },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.dataset.label}: ${formatarNumeroInteiro(ctx.raw)}`
+                        }
+                    },
                     datalabels: {
                         anchor: 'end',
                         align: 'top',
                         offset: 4,
-                        formatter: (value) => formatarValor(value),
+                        formatter: (value) => formatarNumeroInteiro(value),
                         color: '#3C003C',
                         font: { weight: 'bold', size: 11 }
                     }
@@ -747,7 +755,7 @@
                         grid: { color: gridColor, lineWidth: 2 },
                         border: { width: 2, color: gridColor },
                         ticks: { 
-                            callback: (v) => 'R$ ' + v.toLocaleString('pt-BR'),
+                            callback: (v) => formatarNumeroInteiro(v),
                             font: { weight: 'bold', size: 11, color: '#3C003C' }
                         }
                     },
@@ -784,7 +792,7 @@
 
         window.graficoTop10Horizontal = new Chart(ctx, {
             type: 'bar',
-            data: { labels, datasets: [{ label: 'Receita (R$)', data, backgroundColor: '#3C003C', borderRadius: 6 }] },
+            data: { labels, datasets: [{ label: 'Receita', data, backgroundColor: '#3C003C', borderRadius: 6 }] },
             options: {
                 indexAxis: 'y',
                 responsive: true,
@@ -792,10 +800,14 @@
                 layout: { padding: { right: 80 } },
                 plugins: {
                     legend: { display: false },
-                    tooltip: { callbacks: { label: (ctx) => `R$ ${ctx.raw.toLocaleString('pt-BR')}` } },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `Receita: ${formatarNumeroInteiro(ctx.raw)}`
+                        }
+                    },
                     datalabels: {
                         anchor: 'end', align: 'right', offset: 6,
-                        formatter: formatarValor,
+                        formatter: (value) => formatarNumeroInteiro(value),
                         color: '#3C003C',
                         font: { weight: 'bold', size: 12 }
                     }
@@ -805,7 +817,10 @@
                         beginAtZero: true, max: maxValor,
                         grid: { color: gridColor, lineWidth: 2 },
                         border: { width: 2, color: gridColor },
-                        ticks: { callback: (v) => 'R$ ' + v.toLocaleString('pt-BR'), font: { weight: 'bold', size: 11, color: '#3C003C' } }
+                        ticks: { 
+                            callback: (v) => formatarNumeroInteiro(v),
+                            font: { weight: 'bold', size: 11, color: '#3C003C' }
+                        }
                     },
                     y: { 
                         grid: { display: false },
@@ -840,16 +855,20 @@
 
         window.graficoTrimestre = new Chart(ctx, {
             type: 'bar',
-            data: { labels, datasets: [{ label: 'Receita (R$)', data, backgroundColor: '#3C003C', borderRadius: 6 }] },
+            data: { labels, datasets: [{ label: 'Receita', data, backgroundColor: '#3C003C', borderRadius: 6 }] },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: { callbacks: { label: (ctx) => `R$ ${ctx.raw.toLocaleString('pt-BR')}` } },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `Receita: ${formatarNumeroInteiro(ctx.raw)}`
+                        }
+                    },
                     datalabels: {
                         anchor: 'end', align: 'top', offset: 4,
-                        formatter: formatarValor,
+                        formatter: (value) => formatarNumeroInteiro(value),
                         color: '#3C003C',
                         font: { weight: 'bold', size: 11 }
                     }
@@ -859,7 +878,10 @@
                         beginAtZero: true, max: maxValor,
                         grid: { color: gridColor, lineWidth: 2 },
                         border: { width: 2, color: gridColor },
-                        ticks: { callback: (v) => 'R$ ' + v.toLocaleString('pt-BR'), font: { weight: 'bold', size: 11, color: '#3C003C' } }
+                        ticks: { 
+                            callback: (v) => formatarNumeroInteiro(v),
+                            font: { weight: 'bold', size: 11, color: '#3C003C' }
+                        }
                     },
                     x: { 
                         grid: { display: false },
@@ -913,7 +935,15 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${((ctx.raw/totalRB)*100).toFixed(1)}%` } },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const valor = ctx.raw;
+                                const percent = ((valor / totalRB) * 100).toFixed(1);
+                                return `${ctx.label}: ${formatarNumeroInteiro(valor)} (${percent}%)`;
+                            }
+                        }
+                    },
                     datalabels: {
                         formatter: (value, ctx) => {
                             const percent = ((value / totalRB) * 100).toFixed(1) + '%';
@@ -950,16 +980,20 @@
 
         window.graficoCCBarras = new Chart(ctx, {
             type: 'bar',
-            data: { labels, datasets: [{ label: 'Receita (R$)', data, backgroundColor: '#3C003C', borderRadius: 6 }] },
+            data: { labels, datasets: [{ label: 'Receita', data, backgroundColor: '#3C003C', borderRadius: 6 }] },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: { callbacks: { label: (ctx) => `R$ ${ctx.raw.toLocaleString('pt-BR')}` } },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `Receita: ${formatarNumeroInteiro(ctx.raw)}`
+                        }
+                    },
                     datalabels: {
                         anchor: 'end', align: 'top', offset: 4,
-                        formatter: formatarValor,
+                        formatter: (value) => formatarNumeroInteiro(value),
                         color: '#3C003C',
                         font: { weight: 'bold', size: 11 }
                     }
@@ -969,7 +1003,10 @@
                         beginAtZero: true, max: maxValor,
                         grid: { color: gridColor, lineWidth: 2 },
                         border: { width: 2, color: gridColor },
-                        ticks: { callback: (v) => 'R$ ' + v.toLocaleString('pt-BR'), font: { weight: 'bold', size: 11, color: '#3C003C' } }
+                        ticks: { 
+                            callback: (v) => formatarNumeroInteiro(v),
+                            font: { weight: 'bold', size: 11, color: '#3C003C' }
+                        }
                     },
                     x: { 
                         grid: { display: false },
@@ -1030,7 +1067,6 @@
             mesesLista.forEach((m, index) => {
                 const valores = g.meses[m] || { rb: 0, custo: 0 };
                 const classeCelula = index % 2 === 0 ? 'grupo-mes-par' : 'grupo-mes-impar';
-                // Formatação sem "R$" e sem decimais
                 const rbFormatado = formatarNumeroInteiro(valores.rb);
                 const custoFormatado = formatarNumeroInteiro(valores.custo);
                 linha += `<td class="${classeCelula}">${rbFormatado}</td>`;
@@ -1077,7 +1113,7 @@
             const linha = [g.cc, g.centro, g.sub, g.cliente];
             mesesLista.forEach(m => {
                 const valores = g.meses[m] || { rb: 0, custo: 0 };
-                linha.push(valores.rb.toFixed(0).replace('.', ',')); // sem decimais
+                linha.push(valores.rb.toFixed(0).replace('.', ','));
                 linha.push(valores.custo.toFixed(0).replace('.', ','));
             });
             linhas.push(linha);

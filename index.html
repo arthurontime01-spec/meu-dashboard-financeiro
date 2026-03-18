@@ -9,6 +9,8 @@
     <!-- html2canvas e jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- PapaParse para ler CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;600;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,7 +27,6 @@
             --text-secondary: #5A5A6E;
             --border-color: #D0D4D8;
             --card-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            --header-gradient: linear-gradient(135deg, #3C003C 0%, #5A005A 100%);
             --font-primary: 'Inter', sans-serif;
             --font-heading: 'Montserrat', sans-serif;
             --hover-scale: 1.02;
@@ -39,7 +40,7 @@
         }
         .container { max-width: 1600px; margin: 0 auto; }
         header {
-            background: var(--header-gradient);
+            background: #3C003C; /* fundo sólido roxo */
             padding: 20px 30px;
             border-radius: 20px 20px 0 0;
             border-bottom: 4px solid var(--ontime-orange);
@@ -63,6 +64,42 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         header h1 span { color: var(--ontime-orange); }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: white;
+            border: none;
+            color: #3C003C;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            background: var(--ontime-orange);
+            color: white;
+            box-shadow: 0 6px 15px rgba(255,110,0,0.3);
+        }
+        .btn.primary {
+            background: var(--ontime-orange);
+            color: white;
+        }
+        .btn.primary:hover { background: var(--ontime-orange-dark); }
+        .btn.secondary {
+            background: var(--ontime-purple);
+            color: white;
+        }
+        .btn.secondary:hover { background: var(--ontime-purple-light); }
         .nav-tabs {
             display: flex;
             gap: 10px;
@@ -198,33 +235,6 @@
             margin: 20px 0 30px;
             flex-wrap: wrap;
         }
-        .btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-speed);
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            border-color: var(--ontime-orange);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        }
-        .btn.primary {
-            background: var(--ontime-orange);
-            color: white;
-            border: 1px solid var(--ontime-orange-dark);
-        }
-        .btn.primary:hover { background: var(--ontime-orange-dark); }
-        .btn.secondary {
-            background: var(--ontime-purple);
-            color: white;
-            border: 1px solid var(--ontime-purple-dark);
-        }
-        .btn.secondary:hover { background: var(--ontime-purple-light); }
         footer {
             text-align: center;
             color: var(--text-secondary);
@@ -247,6 +257,16 @@
         body.exporting .grafico-card canvas {
             filter: none;
         }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -254,7 +274,9 @@
     <header>
         <h1>ON<span>TIME</span> | Resumo atualizado - Comparativo RB. / Custo</h1>
         <div class="header-actions">
-            <!-- sem toggle de tema -->
+            <button class="btn" id="atualizarBtn" onclick="atualizarDados()">
+                <span>🔄</span> Atualizar Dados
+            </button>
         </div>
     </header>
 
@@ -327,7 +349,7 @@
     <!-- Página Relatório Mensal -->
     <div id="page-relatorio" class="page">
         <div class="tabela-container">
-            <h2 style="color: var(--ontime-orange);">📑 Receita e Custo por Centro de Custo / Subnegócio</h2>
+            <h2 style="color: var(--ontime-orange);">📑 Receita e Custo por Cliente, Centro de Custo e Subnegócio</h2>
             <table id="tabelaRelatorioMensal">
                 <thead id="theadRelatorio"></thead>
                 <tbody id="tbodyRelatorioMensal"></tbody>
@@ -338,16 +360,13 @@
         </div>
     </div>
 
-    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v16.1</footer>
+    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v17.0</footer>
 </div>
 
 <script>
-    // ===== CONFIGURAÇÃO DO LINK PÚBLICO CSV =====
+    // ===== CONFIGURAÇÃO =====
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGxZSZ_wfGJCzNi3fMKJbcj0uNisY3CsJxfBgPESThH8kc6-iKf3A7eea9qsz7sfaOANVl2ko2KWK/pub?gid=0&single=true&output=csv";
-    // ============================================
-
-    // Elementos de data
-    document.getElementById('dataAtual').innerText = new Date().toLocaleDateString('pt-BR');
+    // =========================
 
     // Variáveis globais
     window.dadosConsolidados = [];
@@ -358,7 +377,7 @@
     window.graficoCentroCusto = null;
     window.graficoCCBarras = null;
 
-    // Mapeamento operacao -> centro de custo
+    // Mapeamento operacao -> centro de custo (mantido)
     window.auxiliar = [
         { operacao: "LM", cc: "30010101", centro: "OTX B2C", sub: "LM" },
         { operacao: "FM", cc: "30010105", centro: "OT FM", sub: "FM" },
@@ -381,55 +400,62 @@
         return encontrado || { cc: "00000000", centro: "Outros", sub: operacao };
     };
 
-    // Função para normalizar o formato do mês: "jan./2026" -> "JAN/2026"
-    function normalizarMes(mes) {
-        if (!mes) return mes;
-        // Remove ponto se existir e converte para maiúsculas
-        return mes.replace('.', '').toUpperCase();
-    }
+    // Elementos
+    const dataAtualEl = document.getElementById('dataAtual');
+    if (dataAtualEl) dataAtualEl.innerText = new Date().toLocaleDateString('pt-BR');
 
-    // Carregar dados do CSV publicado
+    // Função para carregar dados do CSV
     async function carregarDados() {
+        const btn = document.getElementById('atualizarBtn');
+        btn.innerHTML = '<span class="loading"></span> Carregando...';
+        btn.disabled = true;
+
         try {
             const response = await fetch(CSV_URL);
-            if (!response.ok) throw new Error('Erro ao carregar CSV');
             const csvText = await response.text();
             
-            // Parse CSV (simples, assumindo vírgula como separador)
-            const linhas = csvText.split('\n').filter(l => l.trim() !== '');
-            const cabecalho = linhas[0].split(',').map(h => h.trim());
-            
-            // Mapeia índices esperados
-            const idxCliente = cabecalho.indexOf('cliente');
-            const idxOperacao = cabecalho.indexOf('operacao');
-            const idxRb = cabecalho.indexOf('rb');
-            const idxCusto = cabecalho.indexOf('custo');
-            const idxRbProj = cabecalho.indexOf('rbProj');
-            const idxMb = cabecalho.indexOf('mb');
-            const idxMes = cabecalho.indexOf('mes');
+            PapaParse.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: false,
+                complete: (results) => {
+                    // Mapeia para o formato esperado, ignorando mb
+                    window.dadosConsolidados = results.data.map(row => ({
+                        cliente: row.cliente?.trim() || '',
+                        operacao: row.operacao?.trim() || '',
+                        rb: parseFloat(row.rb) || 0,
+                        custo: parseFloat(row.custo) || 0,
+                        rbProj: parseFloat(row.rbProj) || 0,
+                        // mb não é mais utilizado
+                        mes: row.mes?.trim() || ''
+                    })).filter(d => d.cliente && d.operacao && d.mes); // remove linhas inválidas
 
-            window.dadosConsolidados = linhas.slice(1).map(linha => {
-                const cols = linha.split(',').map(c => c.trim());
-                return {
-                    cliente: cols[idxCliente] || '',
-                    operacao: cols[idxOperacao] || '',
-                    rb: parseFloat(cols[idxRb]) || 0,
-                    custo: parseFloat(cols[idxCusto]) || 0,
-                    rbProj: parseFloat(cols[idxRbProj]) || 0,
-                    mb: parseFloat(cols[idxMb]) || 0,
-                    mes: normalizarMes(cols[idxMes] || '')
-                };
-            }).filter(d => d.cliente && d.operacao); // remove linhas vazias
-
-            window.dadosFiltrados = [...window.dadosConsolidados];
-            atualizarTudo();
+                    window.dadosFiltrados = [...window.dadosConsolidados];
+                    atualizarTudo();
+                    btn.innerHTML = '<span>🔄</span> Atualizar Dados';
+                    btn.disabled = false;
+                },
+                error: (error) => {
+                    console.error('Erro ao parsear CSV:', error);
+                    alert('Erro ao carregar dados. Verifique o console.');
+                    btn.innerHTML = '<span>🔄</span> Atualizar Dados';
+                    btn.disabled = false;
+                }
+            });
         } catch (error) {
-            console.error("Erro ao carregar dados da planilha:", error);
-            document.getElementById('rbTotal').innerText = 'Erro ao carregar';
+            console.error('Erro ao buscar CSV:', error);
+            alert('Erro ao conectar com a planilha. Tente novamente.');
+            btn.innerHTML = '<span>🔄</span> Atualizar Dados';
+            btn.disabled = false;
         }
     }
 
-    // Inicialização
+    // Função chamada pelo botão
+    window.atualizarDados = function() {
+        carregarDados();
+    };
+
+    // Carrega dados na inicialização
     carregarDados();
 
     // ========== FUNÇÕES DE ATUALIZAÇÃO ==========
@@ -774,18 +800,22 @@
             return meses.indexOf(m1) - meses.indexOf(m2);
         });
 
-        let thead = '<tr><th>Código C.C.</th><th>Centro de Custo</th><th>Subnegócio</th>';
+        // Cabeçalho: Código, Centro, Sub, Cliente + meses (RB e Custo)
+        let thead = '<tr><th>Código C.C.</th><th>Centro de Custo</th><th>Subnegócio</th><th>Cliente</th>';
         mesesLista.forEach(m => thead += `<th colspan="2">${m}</th>`);
-        thead += '</tr><tr><th></th><th></th><th></th>';
+        thead += '</tr><tr><th></th><th></th><th></th><th></th>';
         mesesLista.forEach(() => thead += '<th>RB (R$)</th><th>Custo (R$)</th>');
         thead += '</tr>';
         document.getElementById('theadRelatorio').innerHTML = thead;
 
+        // Agrupar por cliente + centro + sub
         const grupos = {};
         window.dadosConsolidados.forEach(d => {
             const { cc, centro, sub } = window.getCCSub(d.operacao);
-            const chave = `${cc}|${centro}|${sub}`;
-            if (!grupos[chave]) grupos[chave] = { cc, centro, sub, meses: {} };
+            const chave = `${d.cliente}|${cc}|${centro}|${sub}`;
+            if (!grupos[chave]) {
+                grupos[chave] = { cliente: d.cliente, cc, centro, sub, meses: {} };
+            }
             if (!grupos[chave].meses[d.mes]) grupos[chave].meses[d.mes] = { rb: 0, custo: 0 };
             grupos[chave].meses[d.mes].rb += d.rb;
             grupos[chave].meses[d.mes].custo += d.custo;
@@ -793,7 +823,7 @@
 
         let tbody = '';
         Object.values(grupos).forEach(g => {
-            let linha = `<tr><td>${g.cc}</td><td>${g.centro}</td><td>${g.sub}</td>`;
+            let linha = `<tr><td>${g.cc}</td><td>${g.centro}</td><td>${g.sub}</td><td>${g.cliente}</td>`;
             mesesLista.forEach(m => {
                 const valores = g.meses[m] || { rb: 0, custo: 0 };
                 linha += `<td>R$ ${valores.rb.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>`;
@@ -818,14 +848,16 @@
         const grupos = {};
         window.dadosConsolidados.forEach(d => {
             const { cc, centro, sub } = window.getCCSub(d.operacao);
-            const chave = `${cc}|${centro}|${sub}`;
-            if (!grupos[chave]) grupos[chave] = { cc, centro, sub, meses: {} };
+            const chave = `${d.cliente}|${cc}|${centro}|${sub}`;
+            if (!grupos[chave]) {
+                grupos[chave] = { cliente: d.cliente, cc, centro, sub, meses: {} };
+            }
             if (!grupos[chave].meses[d.mes]) grupos[chave].meses[d.mes] = { rb: 0, custo: 0 };
             grupos[chave].meses[d.mes].rb += d.rb;
             grupos[chave].meses[d.mes].custo += d.custo;
         });
 
-        let cabecalho = ['Código C.C.', 'Centro de Custo', 'Subnegócio'];
+        let cabecalho = ['Código C.C.', 'Centro de Custo', 'Subnegócio', 'Cliente'];
         mesesLista.forEach(m => {
             cabecalho.push(`${m} RB`);
             cabecalho.push(`${m} Custo`);
@@ -833,7 +865,7 @@
 
         const linhas = [];
         Object.values(grupos).forEach(g => {
-            const linha = [g.cc, g.centro, g.sub];
+            const linha = [g.cc, g.centro, g.sub, g.cliente];
             mesesLista.forEach(m => {
                 const valores = g.meses[m] || { rb: 0, custo: 0 };
                 linha.push(valores.rb.toFixed(2).replace('.', ','));
@@ -862,17 +894,18 @@
         });
     }
 
+    // Exportação com qualidade máxima (scale = 3)
     function exportarPDF() {
         document.body.classList.add('exporting');
         const element = document.querySelector('.container');
-        html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+        html2canvas(element, { scale: 3, backgroundColor: '#ffffff' }).then(canvas => {
             document.body.classList.remove('exporting');
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('landscape', 'pt', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST'); // qualidade máxima
             pdf.save('dashboard.pdf');
         }).catch(err => {
             document.body.classList.remove('exporting');
@@ -883,11 +916,11 @@
     function exportarImagem() {
         document.body.classList.add('exporting');
         const element = document.querySelector('.container');
-        html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+        html2canvas(element, { scale: 3, backgroundColor: '#ffffff' }).then(canvas => {
             document.body.classList.remove('exporting');
             const link = document.createElement('a');
             link.download = 'dashboard.png';
-            link.href = canvas.toDataURL();
+            link.href = canvas.toDataURL('image/png');
             link.click();
         }).catch(err => {
             document.body.classList.remove('exporting');

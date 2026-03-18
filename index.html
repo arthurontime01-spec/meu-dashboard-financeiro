@@ -9,8 +9,6 @@
     <!-- html2canvas e jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- PapaParse para ler CSV -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;600;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,6 +25,7 @@
             --text-secondary: #5A5A6E;
             --border-color: #D0D4D8;
             --card-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            --header-gradient: linear-gradient(135deg, #3C003C 0%, #5A005A 100%);
             --font-primary: 'Inter', sans-serif;
             --font-heading: 'Montserrat', sans-serif;
             --hover-scale: 1.02;
@@ -40,7 +39,7 @@
         }
         .container { max-width: 1600px; margin: 0 auto; }
         header {
-            background: #3C003C; /* fundo sólido roxo */
+            background: var(--header-gradient);
             padding: 20px 30px;
             border-radius: 20px 20px 0 0;
             border-bottom: 4px solid var(--ontime-orange);
@@ -55,6 +54,7 @@
             top: 0;
             z-index: 100;
         }
+        body.exporting header { position: static; }
         header h1 {
             font-family: var(--font-heading);
             font-size: 28px;
@@ -63,12 +63,18 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         header h1 span { color: var(--ontime-orange); }
-        .nav-tabs {
+        .nav-bar {
             display: flex;
+            align-items: center;
             gap: 10px;
             margin: 20px 0;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .nav-tab {
@@ -91,6 +97,35 @@
             color: white;
             border-color: var(--ontime-purple-dark);
         }
+        .btn {
+            background: white;
+            border: none;
+            color: var(--ontime-purple);
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            background: var(--ontime-purple);
+            color: white;
+            box-shadow: 0 6px 15px rgba(60,0,60,0.3);
+        }
+        .btn.primary {
+            background: var(--ontime-orange);
+            color: white;
+        }
+        .btn.primary:hover { background: var(--ontime-orange-dark); }
+        .btn.icon-only {
+            padding: 10px 15px;
+            font-size: 18px;
+        }
         .page { display: none; }
         .page.active { display: block; }
 
@@ -106,7 +141,7 @@
             border-radius: 20px;
             border: 1px solid var(--border-color);
             box-shadow: var(--card-shadow);
-            border-left: 4px solid var(--ontime-purple); /* roxo */
+            border-left: 4px solid var(--ontime-purple);
             transition: all var(--transition-speed);
             cursor: pointer;
         }
@@ -134,7 +169,7 @@
             font-family: var(--font-heading);
             font-size: 28px;
             font-weight: 800;
-            color: var(--ontime-purple); /* roxo */
+            color: var(--ontime-purple);
             line-height: 1.2;
         }
         .kpi-card .variacao {
@@ -181,14 +216,14 @@
             display: flex;
             flex-direction: column;
         }
-        .grafico-card:hover { 
+        .grafico-card:hover {
             box-shadow: 0 12px 30px rgba(60,0,60,0.1);
             border-color: var(--ontime-purple);
         }
         .grafico-card h2 {
             font-family: var(--font-heading);
             font-size: 18px;
-            color: var(--ontime-purple); /* roxo */
+            color: var(--ontime-purple);
             margin-bottom: 15px;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 8px;
@@ -220,7 +255,7 @@
         th {
             text-align: left;
             padding: 12px 8px;
-            color: var(--ontime-purple); /* roxo */
+            color: var(--ontime-purple);
             font-weight: 700;
             border-bottom: 2px solid var(--border-color);
         }
@@ -236,43 +271,6 @@
             justify-content: flex-end;
             margin: 20px 0 30px;
             flex-wrap: wrap;
-        }
-        .btn {
-            background: white;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-speed);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            border-color: var(--ontime-purple);
-            background: var(--ontime-purple);
-            color: white;
-            box-shadow: 0 6px 15px rgba(60,0,60,0.2);
-        }
-        .btn.primary {
-            background: var(--ontime-orange);
-            color: white;
-            border: none;
-        }
-        .btn.primary:hover { background: var(--ontime-orange-dark); }
-        .btn.secondary {
-            background: var(--ontime-purple);
-            color: white;
-            border: none;
-        }
-        .btn.secondary:hover { background: var(--ontime-purple-light); }
-        .btn.icon-only {
-            padding: 10px 15px;
-            font-size: 18px;
         }
         footer {
             text-align: center;
@@ -321,11 +319,6 @@
             animation: spin 1s ease-in-out infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .atualizar-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 15px;
-        }
         .icone-filtro {
             font-size: 14px;
             background: var(--ontime-purple);
@@ -343,12 +336,17 @@
 <div class="container">
     <header>
         <h1>ON<span>TIME</span> | Resumo atualizado - Comparativo RB. / Custo</h1>
-        <!-- Sem botão no cabeçalho -->
     </header>
 
-    <div class="nav-tabs">
-        <div class="nav-tab active" onclick="mudarPagina('dashboard')">📊 Dashboard</div>
-        <div class="nav-tab" onclick="mudarPagina('relatorio')">📑 Relatório Mensal</div>
+    <!-- Barra de navegação com botão de atualizar e abas -->
+    <div class="nav-bar">
+        <button class="btn icon-only" id="atualizarBtn" onclick="atualizarDados()" title="Atualizar dados">
+            🔄
+        </button>
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="mudarPagina('dashboard')">📊 Dashboard</div>
+            <div class="nav-tab" onclick="mudarPagina('relatorio')">📑 Relatório Mensal</div>
+        </div>
     </div>
 
     <!-- Página Dashboard -->
@@ -423,11 +421,6 @@
 
     <!-- Página Relatório Mensal -->
     <div id="page-relatorio" class="page">
-        <div class="atualizar-container">
-            <button class="btn icon-only" id="atualizarBtn" onclick="atualizarDados()" title="Atualizar dados">
-                🔄
-            </button>
-        </div>
         <div class="tabela-container">
             <h2 style="color: var(--ontime-purple);">📑 Receita e Custo por Cliente, Centro de Custo e Subnegócio</h2>
             <table id="tabelaRelatorioMensal">
@@ -440,14 +433,16 @@
         </div>
     </div>
 
-    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v19.0</footer>
+    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v21.0</footer>
 </div>
 
 <script>
-    // ===== CONFIGURAÇÃO =====
-    // Link de publicação CSV que está funcionando (confirmado)
+    // ===== CONFIGURAÇÃO DO LINK PÚBLICO CSV =====
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGxZSZ_wfGJCzNi3fMKJbcj0uNisY3CsJxfBgPESThH8kc6-iKf3A7eea9qsz7sfaOANVl2ko2KWK/pub?gid=0&single=true&output=csv";
-    // =========================
+    // ============================================
+
+    // Elementos de data
+    document.getElementById('dataAtual').innerText = new Date().toLocaleDateString('pt-BR');
 
     // Variáveis globais
     window.dadosConsolidados = [];
@@ -482,58 +477,73 @@
         return encontrado || { cc: "00000000", centro: "Outros", sub: operacao };
     };
 
-    // Elementos
-    const dataAtualEl = document.getElementById('dataAtual');
-    if (dataAtualEl) dataAtualEl.innerText = new Date().toLocaleDateString('pt-BR');
+    // Função para normalizar o formato do mês: "jan./2026" -> "JAN/2026"
+    function normalizarMes(mes) {
+        if (!mes) return mes;
+        // Remove ponto se existir e converte para maiúsculas
+        return mes.replace('.', '').toUpperCase();
+    }
 
     // Função para carregar dados do CSV
     async function carregarDados() {
         const btn = document.getElementById('atualizarBtn');
-        if (!btn) return;
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<span class="loading"></span>';
-        btn.disabled = true;
+        if (btn) {
+            btn.innerHTML = '<span class="loading"></span>';
+            btn.disabled = true;
+        }
 
         try {
             const response = await fetch(CSV_URL);
-            if (!response.ok) throw new Error('Erro HTTP: ' + response.status);
+            if (!response.ok) throw new Error('Erro ao carregar CSV');
             const csvText = await response.text();
             
-            PapaParse.parse(csvText, {
-                header: true,
-                skipEmptyLines: true,
-                dynamicTyping: false,
-                complete: (results) => {
-                    // Mapeia para o formato esperado, ignorando mb
-                    window.dadosConsolidados = results.data.map(row => ({
-                        cliente: row.cliente?.trim() || '',
-                        operacao: row.operacao?.trim() || '',
-                        rb: parseFloat(row.rb) || 0,
-                        custo: parseFloat(row.custo) || 0,
-                        rbProj: parseFloat(row.rbProj) || 0,
-                        mes: row.mes?.trim() || ''
-                    })).filter(d => d.cliente && d.operacao && d.mes);
+            // Parse CSV (simples, assumindo vírgula como separador)
+            const linhas = csvText.split('\n').filter(l => l.trim() !== '');
+            const cabecalho = linhas[0].split(',').map(h => h.trim());
+            
+            // Mapeia índices esperados
+            const idxCliente = cabecalho.indexOf('cliente');
+            const idxOperacao = cabecalho.indexOf('operacao');
+            const idxRb = cabecalho.indexOf('rb');
+            const idxCusto = cabecalho.indexOf('custo');
+            const idxRbProj = cabecalho.indexOf('rbProj');
+            const idxMb = cabecalho.indexOf('mb');
+            const idxMes = cabecalho.indexOf('mes');
 
-                    // Aplica filtro se houver
-                    aplicarFiltro(window.filtroAtivo);
-                    
-                    btn.innerHTML = '🔄';
-                    btn.disabled = false;
-                },
-                error: (error) => {
-                    console.error('Erro ao parsear CSV:', error);
-                    alert('Erro ao processar os dados da planilha. Verifique o formato.');
-                    btn.innerHTML = '🔄';
-                    btn.disabled = false;
-                }
-            });
+            window.dadosConsolidados = linhas.slice(1).map(linha => {
+                const cols = linha.split(',').map(c => c.trim());
+                return {
+                    cliente: cols[idxCliente] || '',
+                    operacao: cols[idxOperacao] || '',
+                    rb: parseFloat(cols[idxRb]) || 0,
+                    custo: parseFloat(cols[idxCusto]) || 0,
+                    rbProj: parseFloat(cols[idxRbProj]) || 0,
+                    mb: parseFloat(cols[idxMb]) || 0,
+                    mes: normalizarMes(cols[idxMes] || '')
+                };
+            }).filter(d => d.cliente && d.operacao); // remove linhas vazias
+
+            // Aplica filtro se houver
+            aplicarFiltro(window.filtroAtivo);
+            
+            if (btn) {
+                btn.innerHTML = '🔄';
+                btn.disabled = false;
+            }
         } catch (error) {
-            console.error('Erro ao buscar CSV:', error);
-            alert('Erro ao conectar com a planilha. Verifique se o link de publicação está ativo e tente novamente.');
-            btn.innerHTML = '🔄';
-            btn.disabled = false;
+            console.error("Erro ao carregar dados da planilha:", error);
+            document.getElementById('rbTotal').innerText = 'Erro ao carregar';
+            if (btn) {
+                btn.innerHTML = '🔄';
+                btn.disabled = false;
+            }
         }
     }
+
+    // Função chamada pelo botão
+    window.atualizarDados = function() {
+        carregarDados();
+    };
 
     // Função para aplicar filtro por cliente
     window.aplicarFiltroCliente = function(cliente) {
@@ -542,7 +552,6 @@
         } else {
             window.filtroAtivo = cliente;
             aplicarFiltro(cliente);
-            // Atualiza UI do card
             document.getElementById('kpiMeli').classList.add('filtro-ativo');
             document.getElementById('filtroInfo').style.display = 'flex';
         }
@@ -565,16 +574,11 @@
         atualizarTudo();
     };
 
-    // Função chamada pelo botão
-    window.atualizarDados = function() {
-        carregarDados();
-    };
-
-    // Carrega dados na inicialização
+    // Inicialização
     carregarDados();
 
     // ========== FUNÇÕES DE ATUALIZAÇÃO ==========
-    function getGridColor() { return 'rgba(60,0,60,0.2)'; } // roxo mais suave
+    function getGridColor() { return 'rgba(60,0,60,0.2)'; }
 
     function formatarValor(valor) {
         if (valor >= 1e6) return 'R$ ' + (valor / 1e6).toFixed(1) + ' Mi';
@@ -585,9 +589,7 @@
     function atualizarTudo() {
         atualizarKPIs();
         atualizarGraficosFiltrados();
-        if (document.getElementById('page-relatorio').classList.contains('active')) {
-            atualizarRelatorioMensal();
-        }
+        atualizarRelatorioMensal();
     }
 
     function atualizarKPIs() {
@@ -617,7 +619,7 @@
 
     function atualizarGraficosFiltrados() {
         atualizarGraficoMensal();
-        atualizarGraficoTop10Horizontal();
+        atualizarGraficoTop10Horizontal(); // esse usa dadosConsolidados
         atualizarGraficoTrimestre();
         atualizarGraficoCentroCusto();
         atualizarGraficoCCBarras();
@@ -693,7 +695,8 @@
     }
 
     function atualizarGraficoTop10Horizontal() {
-        const dados = window.dadosFiltrados;
+        // Este gráfico deve SEMPRE usar os dados completos (sem filtro)
+        const dados = window.dadosConsolidados;
         const clientes = {};
         dados.forEach(d => {
             if (!clientes[d.cliente]) clientes[d.cliente] = 0;
@@ -922,14 +925,14 @@
             return meses.indexOf(m1) - meses.indexOf(m2);
         });
 
+        const dadosParaRelatorio = window.filtroAtivo ? window.dadosFiltrados : window.dadosConsolidados;
+
         let thead = '<tr><th>Código C.C.</th><th>Centro de Custo</th><th>Subnegócio</th><th>Cliente</th>';
         mesesLista.forEach(m => thead += `<th colspan="2">${m}</th>`);
         thead += '</tr><tr><th></th><th></th><th></th><th></th>';
         mesesLista.forEach(() => thead += '<th>RB (R$)</th><th>Custo (R$)</th>');
         thead += '</tr>';
         document.getElementById('theadRelatorio').innerHTML = thead;
-
-        const dadosParaRelatorio = window.filtroAtivo ? window.dadosFiltrados : window.dadosConsolidados;
 
         const grupos = {};
         dadosParaRelatorio.forEach(d => {

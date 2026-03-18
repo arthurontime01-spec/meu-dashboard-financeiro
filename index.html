@@ -38,7 +38,7 @@
         }
         .container { max-width: 1600px; margin: 0 auto; }
         header {
-            background: #3C003C; /* roxo sólido */
+            background: #3C003C;
             padding: 20px 30px;
             border-radius: 20px 20px 0 0;
             border-bottom: 4px solid var(--ontime-orange);
@@ -171,7 +171,6 @@
             color: var(--ontime-purple);
             line-height: 1.2;
         }
-        /* Cor laranja para o valor do KPI de custo */
         #custoTotal {
             color: var(--ontime-orange) !important;
         }
@@ -275,34 +274,67 @@
             background-color: var(--ontime-purple);
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 20;
         }
+        /* Fixar as primeiras quatro colunas horizontalmente */
+        th:nth-child(1),
+        th:nth-child(2),
+        th:nth-child(3),
+        th:nth-child(4) {
+            position: sticky;
+            left: 0;
+            z-index: 25;
+            background-color: var(--ontime-purple);
+        }
+        th:nth-child(2) { left: 120px; } /* Ajuste conforme largura das colunas */
+        th:nth-child(3) { left: 240px; }
+        th:nth-child(4) { left: 360px; }
+        
         td {
             padding: 10px 8px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
+            white-space: nowrap;
         }
-        /* Estilo para as colunas de meses */
-        .mes-col {
-            background-color: #f9f9f9;
+        /* Fixar as primeiras quatro colunas nas linhas de dados */
+        td:nth-child(1),
+        td:nth-child(2),
+        td:nth-child(3),
+        td:nth-child(4) {
+            position: sticky;
+            left: 0;
+            z-index: 15;
+            background-color: white;
         }
-        .mes-col-alt {
-            background-color: #f1f1f1;
-        }
+        td:nth-child(2) { left: 120px; }
+        td:nth-child(3) { left: 240px; }
+        td:nth-child(4) { left: 360px; }
+        
         /* Linhas verticais separadoras entre meses */
-        th:not(:first-child):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)),
-        td:not(:first-child):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) {
+        th:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)),
+        td:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) {
             border-left: 1px solid #ccc;
         }
-        /* Grupos de meses com fundo alternado */
+        
+        /* Fundo alternado para grupos de meses */
         .grupo-mes-par {
             background-color: #f9f9f9;
         }
         .grupo-mes-impar {
             background-color: #f1f1f1;
         }
-        tr:hover td {
-            background-color: rgba(60,0,60,0.05);
+        /* Cabeçalho das subcolunas RB/Custo */
+        th.subcol {
+            font-weight: 700;
+            color: white;
+            background-color: var(--ontime-purple);
+            text-align: center;
+        }
+        /* Ajuste para o cabeçalho dos meses */
+        th.mes-header {
+            text-align: center;
+            color: white;
+            background-color: var(--ontime-purple);
         }
         .acoes-dashboard, .acoes-relatorio {
             display: flex;
@@ -475,7 +507,7 @@
         </div>
     </div>
 
-    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v24.0</footer>
+    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v25.0</footer>
 </div>
 
 <script>
@@ -522,7 +554,6 @@
     // Função para normalizar o formato do mês: "jan./2026" -> "JAN/2026"
     function normalizarMes(mes) {
         if (!mes) return mes;
-        // Remove ponto se existir e converte para maiúsculas
         return mes.replace('.', '').toUpperCase();
     }
 
@@ -539,11 +570,9 @@
             if (!response.ok) throw new Error('Erro ao carregar CSV');
             const csvText = await response.text();
             
-            // Parse CSV (simples, assumindo vírgula como separador)
             const linhas = csvText.split('\n').filter(l => l.trim() !== '');
             const cabecalho = linhas[0].split(',').map(h => h.trim());
             
-            // Mapeia índices esperados
             const idxCliente = cabecalho.indexOf('cliente');
             const idxOperacao = cabecalho.indexOf('operacao');
             const idxRb = cabecalho.indexOf('rb');
@@ -563,9 +592,8 @@
                     mb: parseFloat(cols[idxMb]) || 0,
                     mes: normalizarMes(cols[idxMes] || '')
                 };
-            }).filter(d => d.cliente && d.operacao); // remove linhas vazias
+            }).filter(d => d.cliente && d.operacao);
 
-            // Aplica filtro se houver
             aplicarFiltro(window.filtroAtivo);
             
             if (btn) {
@@ -582,12 +610,10 @@
         }
     }
 
-    // Função chamada pelo botão
     window.atualizarDados = function() {
         carregarDados();
     };
 
-    // Função para aplicar filtro por cliente
     window.aplicarFiltroCliente = function(cliente) {
         if (window.filtroAtivo === cliente) {
             limparFiltro();
@@ -616,16 +642,18 @@
         atualizarTudo();
     };
 
-    // Inicialização
     carregarDados();
 
-    // ========== FUNÇÕES DE ATUALIZAÇÃO ==========
     function getGridColor() { return 'rgba(60,0,60,0.2)'; }
 
     function formatarValor(valor) {
         if (valor >= 1e6) return 'R$ ' + (valor / 1e6).toFixed(1) + ' Mi';
         if (valor >= 1e3) return 'R$ ' + (valor / 1e3).toFixed(0) + ' mil';
         return 'R$ ' + valor.toFixed(0);
+    }
+
+    function formatarNumeroInteiro(valor) {
+        return valor.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
     function atualizarTudo() {
@@ -643,17 +671,15 @@
         const margemFiltrada = totalRBFiltrado > 0 ? ((totalRBFiltrado - totalCustoFiltrado) / totalRBFiltrado * 100).toFixed(1) : 0;
         
         const totalRBCompleto = dadosCompletos.reduce((acc, d) => acc + d.rb, 0);
-        const totalCustoCompleto = dadosCompletos.reduce((acc, d) => acc + d.custo, 0);
         const rbMeli = dadosCompletos.filter(d => d.cliente === 'MELI').reduce((acc, d) => acc + d.rb, 0);
         const percMeli = totalRBCompleto > 0 ? ((rbMeli / totalRBCompleto) * 100).toFixed(1) : 0;
 
-        document.getElementById('rbTotal').innerText = `R$ ${totalRBFiltrado.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
-        document.getElementById('custoTotal').innerText = `R$ ${totalCustoFiltrado.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+        document.getElementById('rbTotal').innerText = `R$ ${formatarNumeroInteiro(totalRBFiltrado)}`;
+        document.getElementById('custoTotal').innerText = `R$ ${formatarNumeroInteiro(totalCustoFiltrado)}`;
         document.getElementById('margem').innerText = `${margemFiltrada}%`;
-        document.getElementById('rbMeli').innerText = `R$ ${rbMeli.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+        document.getElementById('rbMeli').innerText = `R$ ${formatarNumeroInteiro(rbMeli)}`;
         document.getElementById('percMeli').innerText = `${percMeli}% do total`;
 
-        // Variações (exemplo, depois podemos calcular)
         document.getElementById('varRb').innerText = '+5%';
         document.getElementById('varCusto').innerText = '+3%';
         document.getElementById('varMargem').innerText = '+2 p.p.';
@@ -661,7 +687,7 @@
 
     function atualizarGraficosFiltrados() {
         atualizarGraficoMensal();
-        atualizarGraficoTop10Horizontal(); // esse usa dadosConsolidados
+        atualizarGraficoTop10Horizontal();
         atualizarGraficoTrimestre();
         atualizarGraficoCentroCusto();
         atualizarGraficoCCBarras();
@@ -737,7 +763,6 @@
     }
 
     function atualizarGraficoTop10Horizontal() {
-        // Este gráfico deve SEMPRE usar os dados completos (sem filtro)
         const dados = window.dadosConsolidados;
         const clientes = {};
         dados.forEach(d => {
@@ -959,7 +984,7 @@
 
     function atualizarRelatorioMensal() {
         const mesesExistentes = new Set(window.dadosConsolidados.map(d => d.mes));
-        const mesesLista = Array.from(mesesExistentes).sort((a,b) => {
+        const mesesLista = Array.from(mesesExistentes).sort((a, b) => {
             const meses = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
             const [m1, a1] = a.split('/');
             const [m2, a2] = b.split('/');
@@ -969,14 +994,24 @@
 
         const dadosParaRelatorio = window.filtroAtivo ? window.dadosFiltrados : window.dadosConsolidados;
 
-        // Cabeçalho fixo
-        let thead = '<tr><th>Código C.C.</th><th>Centro de Custo</th><th>Subnegócio</th><th>Cliente</th>';
-        mesesLista.forEach((m, index) => {
-            thead += `<th colspan="2" class="${index % 2 === 0 ? 'mes-col' : 'mes-col-alt'}">${m}</th>`;
+        // Cabeçalho: primeira linha com os meses (colspan=2)
+        let thead = '<tr>';
+        thead += '<th>Código C.C.</th><th>Centro de Custo</th><th>Subnegócio</th><th>Cliente</th>';
+        mesesLista.forEach(m => {
+            thead += `<th colspan="2" class="mes-header">${m}</th>`;
+        });
+        thead += '</tr>';
+
+        // Segunda linha: subcabeçalhos "RB" e "Custo" abaixo de cada mês
+        thead += '<tr>';
+        thead += '<th></th><th></th><th></th><th></th>'; // células vazias para as primeiras colunas
+        mesesLista.forEach(() => {
+            thead += '<th class="subcol">RB</th><th class="subcol">Custo</th>';
         });
         thead += '</tr>';
         document.getElementById('theadRelatorio').innerHTML = thead;
 
+        // Agrupar dados por cliente+centro+sub
         const grupos = {};
         dadosParaRelatorio.forEach(d => {
             const { cc, centro, sub } = window.getCCSub(d.operacao);
@@ -995,8 +1030,11 @@
             mesesLista.forEach((m, index) => {
                 const valores = g.meses[m] || { rb: 0, custo: 0 };
                 const classeCelula = index % 2 === 0 ? 'grupo-mes-par' : 'grupo-mes-impar';
-                linha += `<td class="${classeCelula}">R$ ${valores.rb.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>`;
-                linha += `<td class="${classeCelula}">R$ ${valores.custo.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>`;
+                // Formatação sem "R$" e sem decimais
+                const rbFormatado = formatarNumeroInteiro(valores.rb);
+                const custoFormatado = formatarNumeroInteiro(valores.custo);
+                linha += `<td class="${classeCelula}">${rbFormatado}</td>`;
+                linha += `<td class="${classeCelula}">${custoFormatado}</td>`;
             });
             linha += '</tr>';
             tbody += linha;
@@ -1006,7 +1044,7 @@
 
     function exportarCSVRelatorio() {
         const mesesExistentes = new Set(window.dadosConsolidados.map(d => d.mes));
-        const mesesLista = Array.from(mesesExistentes).sort((a,b) => {
+        const mesesLista = Array.from(mesesExistentes).sort((a, b) => {
             const meses = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
             const [m1, a1] = a.split('/');
             const [m2, a2] = b.split('/');
@@ -1039,8 +1077,8 @@
             const linha = [g.cc, g.centro, g.sub, g.cliente];
             mesesLista.forEach(m => {
                 const valores = g.meses[m] || { rb: 0, custo: 0 };
-                linha.push(valores.rb.toFixed(2).replace('.', ','));
-                linha.push(valores.custo.toFixed(2).replace('.', ','));
+                linha.push(valores.rb.toFixed(0).replace('.', ',')); // sem decimais
+                linha.push(valores.custo.toFixed(0).replace('.', ','));
             });
             linhas.push(linha);
         });

@@ -83,13 +83,13 @@
         }
         .nav-tab:hover {
             transform: translateY(-2px);
-            border-color: var(--ontime-orange);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-color: var(--ontime-purple);
+            box-shadow: 0 4px 10px rgba(60,0,60,0.1);
         }
         .nav-tab.active {
-            background: var(--ontime-orange);
+            background: var(--ontime-purple);
             color: white;
-            border-color: var(--ontime-orange-dark);
+            border-color: var(--ontime-purple-dark);
         }
         .page { display: none; }
         .page.active { display: block; }
@@ -106,12 +106,19 @@
             border-radius: 20px;
             border: 1px solid var(--border-color);
             box-shadow: var(--card-shadow);
-            border-left: 4px solid var(--ontime-orange);
+            border-left: 4px solid var(--ontime-purple); /* roxo */
             transition: all var(--transition-speed);
+            cursor: pointer;
         }
         .kpi-card:hover {
             transform: scale(1.02);
-            box-shadow: 0 12px 30px rgba(255,110,0,0.2);
+            box-shadow: 0 12px 30px rgba(60,0,60,0.15);
+            border-color: var(--ontime-purple);
+        }
+        .kpi-card.filtro-ativo {
+            border: 2px solid var(--ontime-orange);
+            border-left: 6px solid var(--ontime-orange);
+            background: #fff0e6;
         }
         .kpi-card h3 {
             font-size: 13px;
@@ -119,12 +126,15 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .kpi-card .valor {
             font-family: var(--font-heading);
             font-size: 28px;
             font-weight: 800;
-            color: var(--ontime-orange);
+            color: var(--ontime-purple); /* roxo */
             line-height: 1.2;
         }
         .kpi-card .variacao {
@@ -133,6 +143,29 @@
         }
         .variacao.positiva { color: #00A86B; }
         .variacao.negativa { color: #DC3545; }
+        .filtro-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 20px;
+        }
+        .btn-limpar-filtro {
+            background: var(--bg-card);
+            border: 1px solid var(--ontime-purple);
+            color: var(--ontime-purple);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-limpar-filtro:hover {
+            background: var(--ontime-purple);
+            color: white;
+        }
         .graficos {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -148,11 +181,14 @@
             display: flex;
             flex-direction: column;
         }
-        .grafico-card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.2); }
+        .grafico-card:hover { 
+            box-shadow: 0 12px 30px rgba(60,0,60,0.1);
+            border-color: var(--ontime-purple);
+        }
         .grafico-card h2 {
             font-family: var(--font-heading);
             font-size: 18px;
-            color: var(--ontime-orange);
+            color: var(--ontime-purple); /* roxo */
             margin-bottom: 15px;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 8px;
@@ -173,6 +209,9 @@
             margin-bottom: 30px;
             transition: box-shadow var(--transition-speed);
         }
+        .tabela-container:hover {
+            border-color: var(--ontime-purple);
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -181,7 +220,7 @@
         th {
             text-align: left;
             padding: 12px 8px;
-            color: var(--ontime-orange);
+            color: var(--ontime-purple); /* roxo */
             font-weight: 700;
             border-bottom: 2px solid var(--border-color);
         }
@@ -190,7 +229,7 @@
             border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
         }
-        tr:hover td { background: rgba(255,110,0,0.1); }
+        tr:hover td { background: rgba(60,0,60,0.05); }
         .acoes-dashboard, .acoes-relatorio {
             display: flex;
             gap: 15px;
@@ -214,10 +253,10 @@
         }
         .btn:hover {
             transform: translateY(-2px);
-            border-color: var(--ontime-orange);
-            background: var(--ontime-orange);
+            border-color: var(--ontime-purple);
+            background: var(--ontime-purple);
             color: white;
-            box-shadow: 0 6px 15px rgba(255,110,0,0.2);
+            box-shadow: 0 6px 15px rgba(60,0,60,0.2);
         }
         .btn.primary {
             background: var(--ontime-orange);
@@ -246,7 +285,6 @@
         }
         .no-export { display: flex; }
         .exporting .no-export { display: none !important; }
-        /* Ajustes para exportação: mantém cores originais, apenas fundo geral branco */
         body.exporting {
             background-color: white !important;
         }
@@ -256,22 +294,22 @@
         body.exporting .grafico-card,
         body.exporting .tabela-container,
         body.exporting .kpi-card {
-            background-color: #F8F9FA !important; /* mantém o tom claro dos cards */
+            background-color: #F8F9FA !important;
             border: 1px solid #ddd !important;
         }
         body.exporting header {
-            background: #3C003C !important; /* mantém roxo */
+            background: #3C003C !important;
         }
         body.exporting header h1,
         body.exporting header h1 span {
-            color: white !important; /* texto branco no cabeçalho */
+            color: white !important;
         }
         body.exporting .nav-tab.active {
             background: #FF6E00 !important;
             color: white !important;
         }
         body.exporting .grafico-card canvas {
-            filter: none; /* sem inversão */
+            filter: none;
         }
         .loading {
             display: inline-block;
@@ -288,13 +326,24 @@
             justify-content: flex-end;
             margin-bottom: 15px;
         }
+        .icone-filtro {
+            font-size: 14px;
+            background: var(--ontime-purple);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <header>
         <h1>ON<span>TIME</span> | Resumo atualizado - Comparativo RB. / Custo</h1>
-        <!-- Botão removido do cabeçalho -->
+        <!-- Sem botão no cabeçalho -->
     </header>
 
     <div class="nav-tabs">
@@ -304,7 +353,21 @@
 
     <!-- Página Dashboard -->
     <div id="page-dashboard" class="page active">
+        <!-- Filtro ativo info -->
+        <div class="filtro-info" id="filtroInfo" style="display: none;">
+            <span style="font-weight: 600; color: var(--ontime-purple);">🔍 Filtrando apenas MELI</span>
+            <button class="btn-limpar-filtro" onclick="limparFiltro()">✕ Limpar filtro</button>
+        </div>
+
         <div class="kpis">
+            <div class="kpi-card" onclick="aplicarFiltroCliente('MELI')" id="kpiMeli">
+                <h3>
+                    Receita MELI
+                    <span class="icone-filtro" title="Clique para filtrar apenas MELI">🔍</span>
+                </h3>
+                <div class="valor" id="rbMeli">R$ 0</div>
+                <div class="variacao" id="percMeli">0% do total</div>
+            </div>
             <div class="kpi-card">
                 <h3>Receita Bruta</h3>
                 <div class="valor" id="rbTotal">R$ 0</div>
@@ -319,11 +382,6 @@
                 <h3>Margem Média</h3>
                 <div class="valor" id="margem">0%</div>
                 <div class="variacao positiva" id="varMargem">+0 p.p.</div>
-            </div>
-            <div class="kpi-card">
-                <h3>Receita MELI</h3>
-                <div class="valor" id="rbMeli">R$ 0</div>
-                <div class="variacao" id="percMeli">0% do total</div>
             </div>
         </div>
 
@@ -371,7 +429,7 @@
             </button>
         </div>
         <div class="tabela-container">
-            <h2 style="color: var(--ontime-orange);">📑 Receita e Custo por Cliente, Centro de Custo e Subnegócio</h2>
+            <h2 style="color: var(--ontime-purple);">📑 Receita e Custo por Cliente, Centro de Custo e Subnegócio</h2>
             <table id="tabelaRelatorioMensal">
                 <thead id="theadRelatorio"></thead>
                 <tbody id="tbodyRelatorioMensal"></tbody>
@@ -382,18 +440,19 @@
         </div>
     </div>
 
-    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v18.0</footer>
+    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v19.0</footer>
 </div>
 
 <script>
     // ===== CONFIGURAÇÃO =====
-    // !!! ATENÇÃO: Substitua pelo link de publicação CSV atualizado !!!
+    // Link de publicação CSV que está funcionando (confirmado)
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbGxZSZ_wfGJCzNi3fMKJbcj0uNisY3CsJxfBgPESThH8kc6-iKf3A7eea9qsz7sfaOANVl2ko2KWK/pub?gid=0&single=true&output=csv";
     // =========================
 
     // Variáveis globais
     window.dadosConsolidados = [];
     window.dadosFiltrados = [];
+    window.filtroAtivo = null; // 'MELI' ou null
     window.graficoMensal = null;
     window.graficoTop10Horizontal = null;
     window.graficoTrimestre = null;
@@ -455,8 +514,9 @@
                         mes: row.mes?.trim() || ''
                     })).filter(d => d.cliente && d.operacao && d.mes);
 
-                    window.dadosFiltrados = [...window.dadosConsolidados];
-                    atualizarTudo();
+                    // Aplica filtro se houver
+                    aplicarFiltro(window.filtroAtivo);
+                    
                     btn.innerHTML = '🔄';
                     btn.disabled = false;
                 },
@@ -475,6 +535,36 @@
         }
     }
 
+    // Função para aplicar filtro por cliente
+    window.aplicarFiltroCliente = function(cliente) {
+        if (window.filtroAtivo === cliente) {
+            limparFiltro();
+        } else {
+            window.filtroAtivo = cliente;
+            aplicarFiltro(cliente);
+            // Atualiza UI do card
+            document.getElementById('kpiMeli').classList.add('filtro-ativo');
+            document.getElementById('filtroInfo').style.display = 'flex';
+        }
+    };
+
+    function aplicarFiltro(cliente) {
+        if (cliente) {
+            window.dadosFiltrados = window.dadosConsolidados.filter(d => d.cliente === cliente);
+        } else {
+            window.dadosFiltrados = [...window.dadosConsolidados];
+        }
+        atualizarTudo();
+    }
+
+    window.limparFiltro = function() {
+        window.filtroAtivo = null;
+        window.dadosFiltrados = [...window.dadosConsolidados];
+        document.getElementById('kpiMeli').classList.remove('filtro-ativo');
+        document.getElementById('filtroInfo').style.display = 'none';
+        atualizarTudo();
+    };
+
     // Função chamada pelo botão
     window.atualizarDados = function() {
         carregarDados();
@@ -484,7 +574,7 @@
     carregarDados();
 
     // ========== FUNÇÕES DE ATUALIZAÇÃO ==========
-    function getGridColor() { return 'rgba(0,0,0,0.2)'; }
+    function getGridColor() { return 'rgba(60,0,60,0.2)'; } // roxo mais suave
 
     function formatarValor(valor) {
         if (valor >= 1e6) return 'R$ ' + (valor / 1e6).toFixed(1) + ' Mi';
@@ -493,27 +583,33 @@
     }
 
     function atualizarTudo() {
-        window.dadosFiltrados = [...window.dadosConsolidados];
         atualizarKPIs();
         atualizarGraficosFiltrados();
-        atualizarRelatorioMensal();
+        if (document.getElementById('page-relatorio').classList.contains('active')) {
+            atualizarRelatorioMensal();
+        }
     }
 
     function atualizarKPIs() {
-        const dados = window.dadosFiltrados;
-        const totalRB = dados.reduce((acc, d) => acc + d.rb, 0);
-        const totalCusto = dados.reduce((acc, d) => acc + d.custo, 0);
-        const margem = totalRB > 0 ? ((totalRB - totalCusto) / totalRB * 100).toFixed(1) : 0;
-        const rbMeli = dados.filter(d => d.cliente === 'MELI').reduce((acc, d) => acc + d.rb, 0);
-        const percMeli = totalRB > 0 ? ((rbMeli / totalRB) * 100).toFixed(1) : 0;
+        const dadosFiltrados = window.dadosFiltrados;
+        const dadosCompletos = window.dadosConsolidados;
+        
+        const totalRBFiltrado = dadosFiltrados.reduce((acc, d) => acc + d.rb, 0);
+        const totalCustoFiltrado = dadosFiltrados.reduce((acc, d) => acc + d.custo, 0);
+        const margemFiltrada = totalRBFiltrado > 0 ? ((totalRBFiltrado - totalCustoFiltrado) / totalRBFiltrado * 100).toFixed(1) : 0;
+        
+        const totalRBCompleto = dadosCompletos.reduce((acc, d) => acc + d.rb, 0);
+        const totalCustoCompleto = dadosCompletos.reduce((acc, d) => acc + d.custo, 0);
+        const rbMeli = dadosCompletos.filter(d => d.cliente === 'MELI').reduce((acc, d) => acc + d.rb, 0);
+        const percMeli = totalRBCompleto > 0 ? ((rbMeli / totalRBCompleto) * 100).toFixed(1) : 0;
 
-        document.getElementById('rbTotal').innerText = `R$ ${totalRB.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
-        document.getElementById('custoTotal').innerText = `R$ ${totalCusto.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
-        document.getElementById('margem').innerText = `${margem}%`;
+        document.getElementById('rbTotal').innerText = `R$ ${totalRBFiltrado.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+        document.getElementById('custoTotal').innerText = `R$ ${totalCustoFiltrado.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+        document.getElementById('margem').innerText = `${margemFiltrada}%`;
         document.getElementById('rbMeli').innerText = `R$ ${rbMeli.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
         document.getElementById('percMeli').innerText = `${percMeli}% do total`;
 
-        // Variações fictícias (podem ser calculadas depois)
+        // Variações (exemplo, depois podemos calcular)
         document.getElementById('varRb').innerText = '+5%';
         document.getElementById('varCusto').innerText = '+3%';
         document.getElementById('varMargem').innerText = '+2 p.p.';
@@ -755,7 +851,7 @@
                         },
                         color: 'white',
                         font: { weight: 'bold', size: 11 },
-                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        backgroundColor: 'rgba(60,0,60,0.7)',
                         borderRadius: 4,
                         padding: 4
                     }
@@ -826,7 +922,6 @@
             return meses.indexOf(m1) - meses.indexOf(m2);
         });
 
-        // Cabeçalho: Código, Centro, Sub, Cliente + meses (RB e Custo)
         let thead = '<tr><th>Código C.C.</th><th>Centro de Custo</th><th>Subnegócio</th><th>Cliente</th>';
         mesesLista.forEach(m => thead += `<th colspan="2">${m}</th>`);
         thead += '</tr><tr><th></th><th></th><th></th><th></th>';
@@ -834,9 +929,10 @@
         thead += '</tr>';
         document.getElementById('theadRelatorio').innerHTML = thead;
 
-        // Agrupar por cliente + centro + sub
+        const dadosParaRelatorio = window.filtroAtivo ? window.dadosFiltrados : window.dadosConsolidados;
+
         const grupos = {};
-        window.dadosConsolidados.forEach(d => {
+        dadosParaRelatorio.forEach(d => {
             const { cc, centro, sub } = window.getCCSub(d.operacao);
             const chave = `${d.cliente}|${cc}|${centro}|${sub}`;
             if (!grupos[chave]) {
@@ -871,8 +967,10 @@
             return meses.indexOf(m1) - meses.indexOf(m2);
         });
 
+        const dadosParaRelatorio = window.filtroAtivo ? window.dadosFiltrados : window.dadosConsolidados;
+
         const grupos = {};
-        window.dadosConsolidados.forEach(d => {
+        dadosParaRelatorio.forEach(d => {
             const { cc, centro, sub } = window.getCCSub(d.operacao);
             const chave = `${d.cliente}|${cc}|${centro}|${sub}`;
             if (!grupos[chave]) {
@@ -918,9 +1016,11 @@
             if (pagina === 'dashboard' && i === 0) t.classList.add('active');
             if (pagina === 'relatorio' && i === 1) t.classList.add('active');
         });
+        if (pagina === 'relatorio') {
+            atualizarRelatorioMensal();
+        }
     }
 
-    // Exportação com qualidade máxima (scale = 3) e fundo branco mantendo cores dos elementos
     function exportarPDF() {
         document.body.classList.add('exporting');
         const element = document.querySelector('.container');

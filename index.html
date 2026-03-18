@@ -210,6 +210,13 @@
             gap: 20px;
             margin-bottom: 30px;
         }
+        .grafico-linha-unica {
+            display: block;
+            margin-bottom: 30px;
+        }
+        .grafico-linha-unica .grafico-card {
+            width: 100%;
+        }
         .grafico-card {
             background: var(--bg-card);
             border-radius: 24px;
@@ -235,17 +242,20 @@
             max-height: 350px;
             width: 100% !important; 
         }
-        .grafico-linha-unica {
-            margin-bottom: 30px;
+        #graficoMensal {
+            max-height: 500px;
         }
         .tabela-container {
             overflow-x: auto;
             background: var(--bg-card);
             border-radius: 24px;
-            padding: 20px;
+            padding: 0;
             border: 1px solid var(--border-color);
             margin-bottom: 30px;
             transition: box-shadow var(--transition-speed);
+            max-height: 600px;
+            overflow-y: auto;
+            position: relative;
         }
         .tabela-container:hover {
             border-color: var(--ontime-purple);
@@ -254,20 +264,46 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
+            min-width: 800px;
         }
         th {
             text-align: left;
             padding: 12px 8px;
-            color: var(--ontime-purple);
+            color: white;
             font-weight: 700;
             border-bottom: 2px solid var(--border-color);
+            background-color: var(--ontime-purple);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         td {
             padding: 10px 8px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
         }
-        tr:hover td { background: rgba(60,0,60,0.05); }
+        /* Estilo para as colunas de meses */
+        .mes-col {
+            background-color: #f9f9f9;
+        }
+        .mes-col-alt {
+            background-color: #f1f1f1;
+        }
+        /* Linhas verticais separadoras entre meses */
+        th:not(:first-child):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)),
+        td:not(:first-child):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)) {
+            border-left: 1px solid #ccc;
+        }
+        /* Grupos de meses com fundo alternado */
+        .grupo-mes-par {
+            background-color: #f9f9f9;
+        }
+        .grupo-mes-impar {
+            background-color: #f1f1f1;
+        }
+        tr:hover td {
+            background-color: rgba(60,0,60,0.05);
+        }
         .acoes-dashboard, .acoes-relatorio {
             display: flex;
             gap: 15px;
@@ -361,7 +397,7 @@
         </div>
 
         <div class="kpis">
-            <!-- Ordem original: Receita Bruta, Custo Total, Margem Média, Receita MELI -->
+            <!-- Ordem: Receita Bruta, Custo Total, Margem Média, Receita MELI -->
             <div class="kpi-card">
                 <h3>Receita Bruta</h3>
                 <div class="valor" id="rbTotal">R$ 0</div>
@@ -387,10 +423,19 @@
             </div>
         </div>
 
-        <div class="graficos">
+        <!-- Linha única: Receita x Custo Mensal -->
+        <div class="grafico-linha-unica">
             <div class="grafico-card">
                 <h2>📈 Receita x Custo Mensal</h2>
                 <canvas id="graficoMensal"></canvas>
+            </div>
+        </div>
+
+        <!-- Segunda linha: Total gerado por Trimestre e Soma RB por Cliente -->
+        <div class="graficos">
+            <div class="grafico-card">
+                <h2>📅 Total gerado por Trimestre</h2>
+                <canvas id="graficoTrimestre"></canvas>
             </div>
             <div class="grafico-card">
                 <h2>🏆 Soma RB. Realizada por Cliente</h2>
@@ -398,18 +443,12 @@
             </div>
         </div>
 
+        <!-- Terceira linha: Percentual C.C e Margem por produto -->
         <div class="graficos">
-            <div class="grafico-card">
-                <h2>📅 Total gerado por Trimestre</h2>
-                <canvas id="graficoTrimestre"></canvas>
-            </div>
             <div class="grafico-card">
                 <h2>🥧 Percentual Total Acumulado C.C</h2>
                 <canvas id="graficoCentroCusto"></canvas>
             </div>
-        </div>
-
-        <div class="grafico-linha-unica">
             <div class="grafico-card">
                 <h2>📊 Margem receita realizada por produto</h2>
                 <canvas id="graficoCCBarras"></canvas>
@@ -426,7 +465,6 @@
     <!-- Página Relatório Mensal -->
     <div id="page-relatorio" class="page">
         <div class="tabela-container">
-            <h2 style="color: var(--ontime-purple);">📑 Receita e Custo por Cliente, Centro de Custo e Subnegócio</h2>
             <table id="tabelaRelatorioMensal">
                 <thead id="theadRelatorio"></thead>
                 <tbody id="tbodyRelatorioMensal"></tbody>
@@ -437,7 +475,7 @@
         </div>
     </div>
 
-    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v22.0</footer>
+    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v24.0</footer>
 </div>
 
 <script>
@@ -931,10 +969,11 @@
 
         const dadosParaRelatorio = window.filtroAtivo ? window.dadosFiltrados : window.dadosConsolidados;
 
+        // Cabeçalho fixo
         let thead = '<tr><th>Código C.C.</th><th>Centro de Custo</th><th>Subnegócio</th><th>Cliente</th>';
-        mesesLista.forEach(m => thead += `<th colspan="2">${m}</th>`);
-        thead += '</tr><tr><th></th><th></th><th></th><th></th>';
-        mesesLista.forEach(() => thead += '<th>RB (R$)</th><th>Custo (R$)</th>');
+        mesesLista.forEach((m, index) => {
+            thead += `<th colspan="2" class="${index % 2 === 0 ? 'mes-col' : 'mes-col-alt'}">${m}</th>`;
+        });
         thead += '</tr>';
         document.getElementById('theadRelatorio').innerHTML = thead;
 
@@ -953,10 +992,11 @@
         let tbody = '';
         Object.values(grupos).forEach(g => {
             let linha = `<tr><td>${g.cc}</td><td>${g.centro}</td><td>${g.sub}</td><td>${g.cliente}</td>`;
-            mesesLista.forEach(m => {
+            mesesLista.forEach((m, index) => {
                 const valores = g.meses[m] || { rb: 0, custo: 0 };
-                linha += `<td>R$ ${valores.rb.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>`;
-                linha += `<td>R$ ${valores.custo.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>`;
+                const classeCelula = index % 2 === 0 ? 'grupo-mes-par' : 'grupo-mes-impar';
+                linha += `<td class="${classeCelula}">R$ ${valores.rb.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>`;
+                linha += `<td class="${classeCelula}">R$ ${valores.custo.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>`;
             });
             linha += '</tr>';
             tbody += linha;

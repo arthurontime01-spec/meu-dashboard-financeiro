@@ -25,7 +25,6 @@
             --text-secondary: #5A5A6E;
             --border-color: #D0D4D8;
             --card-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            --header-gradient: linear-gradient(135deg, #3C003C 0%, #5A005A 100%);
             --font-primary: 'Inter', sans-serif;
             --font-heading: 'Montserrat', sans-serif;
             --hover-scale: 1.02;
@@ -39,7 +38,7 @@
         }
         .container { max-width: 1600px; margin: 0 auto; }
         header {
-            background: var(--header-gradient);
+            background: #3C003C; /* roxo sólido */
             padding: 20px 30px;
             border-radius: 20px 20px 0 0;
             border-bottom: 4px solid var(--ontime-orange);
@@ -171,6 +170,10 @@
             font-weight: 800;
             color: var(--ontime-purple);
             line-height: 1.2;
+        }
+        /* Cor laranja para o valor do KPI de custo */
+        #custoTotal {
+            color: var(--ontime-orange) !important;
         }
         .kpi-card .variacao {
             font-size: 13px;
@@ -358,14 +361,7 @@
         </div>
 
         <div class="kpis">
-            <div class="kpi-card" onclick="aplicarFiltroCliente('MELI')" id="kpiMeli">
-                <h3>
-                    Receita MELI
-                    <span class="icone-filtro" title="Clique para filtrar apenas MELI">🔍</span>
-                </h3>
-                <div class="valor" id="rbMeli">R$ 0</div>
-                <div class="variacao" id="percMeli">0% do total</div>
-            </div>
+            <!-- Ordem original: Receita Bruta, Custo Total, Margem Média, Receita MELI -->
             <div class="kpi-card">
                 <h3>Receita Bruta</h3>
                 <div class="valor" id="rbTotal">R$ 0</div>
@@ -380,6 +376,14 @@
                 <h3>Margem Média</h3>
                 <div class="valor" id="margem">0%</div>
                 <div class="variacao positiva" id="varMargem">+0 p.p.</div>
+            </div>
+            <div class="kpi-card" onclick="aplicarFiltroCliente('MELI')" id="kpiMeli">
+                <h3>
+                    Receita MELI
+                    <span class="icone-filtro" title="Clique para filtrar apenas MELI">🔍</span>
+                </h3>
+                <div class="valor" id="rbMeli">R$ 0</div>
+                <div class="variacao" id="percMeli">0% do total</div>
             </div>
         </div>
 
@@ -433,7 +437,7 @@
         </div>
     </div>
 
-    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v21.0</footer>
+    <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v22.0</footer>
 </div>
 
 <script>

@@ -20,7 +20,7 @@
             --ontime-purple-light: #5A005A;
             --ontime-purple-dark: #2A002A;
             --ontime-purple-soft: rgba(60, 0, 60, 0.08); 
-            --bg: #F0F2F5; /* Fundo levemente acinzentado para destacar os cards brancos */
+            --bg: #F0F2F5;
             --bg-card: #FFFFFF;
             --text-primary: #2C3E50;
             --text-secondary: #5A5A6E;
@@ -31,29 +31,66 @@
             --transition-speed: 0.2s;
         }
 
-        body { background-color: var(--bg); color: var(--text-primary); font-family: var(--font-primary); display: flex; flex-direction: column; min-height: 100vh; }
+        /* --- MODO ESCURO (DARK MODE) --- */
+        body.dark-mode {
+            --bg: #121212;
+            --bg-card: #1E1E26;
+            --text-primary: #E0E0E0;
+            --text-secondary: #A0A0B0;
+            --border-color: #333344;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            --ontime-purple-soft: rgba(255, 255, 255, 0.05);
+        }
+        body.dark-mode header { background: #181820; border-bottom: 4px solid var(--ontime-orange); }
+        body.dark-mode .sidebar { background: #181820; border-color: #333344; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+        body.dark-mode .btn { background: #2A2A35; color: #E0E0E0; border-color: #444455; }
+        body.dark-mode .btn:hover { background: var(--ontime-orange); color: white; border-color: var(--ontime-orange); }
+        body.dark-mode .btn.primary { background: var(--ontime-orange); color: white; }
+        body.dark-mode .nav-tab { background: #2A2A35; border-color: #444455; color: #A0A0B0; }
+        body.dark-mode .nav-tab.active { background: var(--ontime-purple-light); color: white; border-color: var(--ontime-purple-light); }
+        body.dark-mode .filter-btn { background: #2A2A35; color: #CCC; border-color: #2A2A35; }
+        body.dark-mode .filter-btn.active { background: var(--ontime-orange-soft); color: var(--ontime-orange); border-color: var(--ontime-orange); }
+        body.dark-mode .mode-btn { background: #2A2A35; color: #CCC; }
+        body.dark-mode .empty-state-msg { background: #1E1E26; border-color: #333344; }
         
-        .app-container { display: flex; flex: 1; }
+        /* Ajustes precisos do Dark Mode solicitados */
+        body.dark-mode .kpi-card .valor { color: #FFFFFF; } /* Valores do KPI em branco  */
+        body.dark-mode #modeRB.active { color: #FFFFFF; background: var(--ontime-purple-light); border-color: var(--ontime-purple-light); } /* Botão RB Legível  */
+        body.dark-mode .kpi-card .variacao.neutra { background: #333344; color: #CCC; }
         
-        /* Layout Sidebar Ajustado (Mais compacto) */
-        .sidebar { width: 260px; background: var(--bg-card); border-right: 1px solid var(--border-color); padding: 15px; overflow-y: auto; height: calc(100vh - 75px); position: sticky; top: 75px; z-index: 90; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
-        .main-content { flex: 1; padding: 20px 30px; overflow-x: auto; background-color: var(--bg); }
+        /* Tabela Dark Mode */
+        body.dark-mode thead th { background-color: #2A2A35; border-bottom-color: var(--ontime-orange); color: #E0E0E0; }
+        body.dark-mode th.mes-header { background-color: #1E1E26; }
+        body.dark-mode td { background-color: #1E1E26; color: var(--text-primary); border-bottom-color: var(--border-color); }
+        body.dark-mode tbody td.grupo-mes-par { background-color: #24242E; }
+        body.dark-mode tbody td.grupo-mes-impar { background-color: #1E1E26; }
+        body.dark-mode tbody tr:hover td { background-color: #2A2A35; }
+        body.dark-mode th:nth-child(1), body.dark-mode th:nth-child(2), body.dark-mode th:nth-child(3), body.dark-mode th:nth-child(4) { background-color: #2A2A35; }
+        body.dark-mode td:nth-child(1), body.dark-mode td:nth-child(2), body.dark-mode td:nth-child(3), body.dark-mode td:nth-child(4) { background-color: #1E1E26; color: #A0A0B0; }
+        body.dark-mode tbody tr:hover td:nth-child(1), body.dark-mode tbody tr:hover td:nth-child(2), body.dark-mode tbody tr:hover td:nth-child(3), body.dark-mode tbody tr:hover td:nth-child(4) { background-color: #2A2A35; }
+
+        /* Estrutura Base */
+        body { background-color: var(--bg); color: var(--text-primary); font-family: var(--font-primary); display: flex; flex-direction: column; min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
+        .app-container { display: flex; flex: 1; align-items: stretch; }
+        .sidebar { width: 260px; background: var(--bg-card); border-right: 1px solid var(--border-color); padding: 25px 15px; overflow-y: auto; height: 100vh; position: sticky; top: 0; z-index: 90; box-shadow: 2px 0 10px rgba(0,0,0,0.02); transition: all 0.3s; }
+        .main-content { flex: 1; padding: 0; overflow-x: auto; background-color: var(--bg); display: flex; flex-direction: column; transition: all 0.3s; }
         
-        header { background: #3C003C; padding: 15px 30px; border-bottom: 4px solid var(--ontime-orange); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        header { background: #3C003C; padding: 20px 30px; border-bottom: 4px solid var(--ontime-orange); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; width: 100%; transition: background-color 0.3s; }
         header h1 { font-family: var(--font-heading); font-size: 24px; font-weight: 800; color: white; margin: 0; }
         header h1 span { color: var(--ontime-orange); }
         
+        .content-body { padding: 25px 30px; flex: 1; }
+
         .nav-bar { display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 20px; align-items: center; }
         .nav-tab { padding: 8px 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 30px; color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: all var(--transition-speed); font-size: 14px; }
         .nav-tab:hover { border-color: var(--ontime-purple); color: var(--ontime-purple); }
         .nav-tab.active { background: var(--ontime-purple); color: white; border-color: var(--ontime-purple-dark); box-shadow: 0 4px 10px rgba(60,0,60,0.15); }
         
-        /* Botões SVG Modernos */
         .btn { background: white; border: 1px solid var(--border-color); color: var(--ontime-purple); padding: 8px 16px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: all var(--transition-speed); display: inline-flex; align-items: center; gap: 8px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .btn:hover { background: var(--ontime-purple-soft); border-color: var(--ontime-purple); }
         .btn.primary { background: var(--ontime-orange); color: white; border-color: var(--ontime-orange-dark); }
         .btn.primary:hover { background: var(--ontime-orange-dark); color: white; box-shadow: 0 4px 10px rgba(255,110,0,0.3); }
-        .btn.icon-only { padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; }
+        .btn.icon-only { padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; font-size: 16px; }
         
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .spin-anim { animation: spin 1s linear infinite; }
@@ -62,10 +99,9 @@
         .page.active { display: block; animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Filtros Compactos */
-        .filtro-grupo { margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        .filtro-grupo { margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; transition: border-color 0.3s; }
         .filtro-grupo:last-child { border-bottom: none; margin-bottom: 0; }
-        .filtro-grupo label { display: block; font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .filtro-grupo label { display: block; font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; transition: color 0.3s; }
         
         .quick-links { float: right; font-weight: 600; font-size: 10px; text-transform: none; }
         .quick-links a { color: var(--ontime-orange); cursor: pointer; text-decoration: none; margin-left: 5px; transition: color 0.2s; }
@@ -81,20 +117,19 @@
         #modeCusto.active { background: var(--ontime-orange-soft); color: var(--ontime-orange-dark); border-color: var(--ontime-orange); }
         #modeRB.active { background: var(--ontime-purple-soft); color: var(--ontime-purple); border-color: var(--ontime-purple); }
         
-        .clear-filters-btn { background: white; color: var(--ontime-purple); border: 1px solid var(--ontime-purple); padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; font-size: 12px; transition: all 0.2s; }
+        .clear-filters-btn { background: var(--bg-card); color: var(--ontime-purple); border: 1px solid var(--ontime-purple); padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; font-size: 12px; transition: all 0.2s; }
         .clear-filters-btn:hover { background: var(--ontime-purple); color: white; }
 
-        .empty-state-msg { display: none; text-align: center; padding: 60px 20px; background: var(--bg-card); border-radius: 16px; border: 1px dashed var(--border-color); margin-top: 20px; }
+        .empty-state-msg { display: none; text-align: center; padding: 60px 20px; background: var(--bg-card); border-radius: 16px; border: 1px dashed var(--border-color); margin-top: 20px; transition: all 0.3s; }
         .empty-state-msg h2 { color: var(--ontime-orange); font-family: var(--font-heading); margin-bottom: 10px; }
         #page-dashboard.is-empty .empty-state-msg { display: block; }
         #page-dashboard.is-empty .kpis, #page-dashboard.is-empty .graficos, #page-dashboard.is-empty .grafico-linha-unica { display: none; }
 
-        /* KPIs e Gráficos */
         .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .kpi-card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); border-left: 5px solid var(--ontime-purple); display: flex; flex-direction: column; justify-content: center; }
-        .kpi-card h3 { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-        .kpi-card .valor { font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: var(--ontime-purple); line-height: 1.1; }
-        .kpi-card .variacao { font-size: 12px; font-weight: 700; margin-top: 6px; display: inline-block; padding: 2px 8px; border-radius: 12px; background: #f0f0f0; width: fit-content; }
+        .kpi-card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); border-left: 5px solid var(--ontime-purple); display: flex; flex-direction: column; justify-content: center; transition: all 0.3s; }
+        .kpi-card h3 { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; transition: color 0.3s; }
+        .kpi-card .valor { font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: var(--ontime-purple); line-height: 1.1; transition: color 0.3s; }
+        .kpi-card .variacao { font-size: 12px; font-weight: 700; margin-top: 6px; display: inline-block; padding: 2px 8px; border-radius: 12px; background: #f0f0f0; width: fit-content; transition: background 0.3s; }
         .kpi-card .variacao.positiva { color: #008148; background: #E6F4EA; }
         .kpi-card .variacao.negativa { color: #C62828; background: #FCE8E6; }
         .kpi-card .variacao.neutra { color: var(--text-secondary); background: var(--border-color); }
@@ -102,24 +137,29 @@
 
         .graficos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px; }
         .grafico-linha-unica { display: block; margin-bottom: 25px; }
-        .grafico-card { background: var(--bg-card); border-radius: 16px; padding: 20px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); display: flex; flex-direction: column; }
-        .grafico-card h2 { font-family: var(--font-primary); font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .grafico-card { background: var(--bg-card); border-radius: 16px; padding: 20px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); display: flex; flex-direction: column; transition: all 0.3s; }
+        .grafico-card h2 { font-family: var(--font-primary); font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); transition: color 0.3s; }
         .grafico-card canvas { max-height: 320px; width: 100% !important; }
         #graficoMensal { max-height: 400px; }
 
-        /* Tabela */
-        .tabela-container { overflow-x: auto; overflow-y: auto; max-height: 600px; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
-        thead { position: sticky; top: 0; z-index: 40; }
-        th { background-color: var(--ontime-purple); color: white; padding: 12px 10px; font-weight: 600; border-bottom: 2px solid var(--ontime-purple-dark); white-space: nowrap; text-align: right; }
+        /* TABELA: Correção das Linhas Transparentes */
+        .tabela-container { overflow-x: auto; overflow-y: auto; max-height: 600px; background: var(--bg-card); border-radius: 16px; box-shadow: var(--card-shadow); transition: all 0.3s; border: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; min-width: 800px; }
+        
+        /* O segredo: background-clip impede o vazamento do background pelas bordas */
+        th, td { background-clip: padding-box; padding: 10px; white-space: nowrap; text-align: right; transition: all 0.3s; }
+        th { border-bottom: 2px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        td { border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        th:last-child, td:last-child { border-right: none; }
+
+        thead th { position: sticky; top: 0; z-index: 20; background-color: var(--ontime-purple); color: white; font-weight: 600; }
+        tr:nth-child(2) th { top: 41px; z-index: 20; font-size: 12px; }
         th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4) { text-align: left; }
-        tr:nth-child(2) th { position: sticky; top: 41px; z-index: 15; font-size: 12px; }
-        td { padding: 10px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); white-space: nowrap; text-align: right; }
         td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4) { text-align: left; font-weight: 600; color: var(--text-secondary); }
 
-        /* Fixar colunas da esquerda */
-        th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4) { position: sticky; left: 0; background-color: var(--ontime-purple); }
-        td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4) { position: sticky; left: 0; z-index: 15; background-color: var(--bg-card); }
+        thead th:nth-child(1), thead th:nth-child(2), thead th:nth-child(3), thead th:nth-child(4) { z-index: 50 !important; left: 0; }
+        tbody td:nth-child(1), tbody td:nth-child(2), tbody td:nth-child(3), tbody td:nth-child(4) { position: sticky; left: 0; z-index: 15; background-color: var(--bg-card); }
+        
         th:nth-child(1), td:nth-child(1) { min-width: 100px; left: 0; }
         th:nth-child(2), td:nth-child(2) { min-width: 130px; left: 100px; }
         th:nth-child(3), td:nth-child(3) { min-width: 100px; left: 230px; }
@@ -131,24 +171,37 @@
         
         th.subcol.sortable { cursor: pointer; transition: color 0.2s; }
         th.subcol.sortable:hover { color: var(--ontime-orange-light); }
-        th.mes-header { text-align: center; color: white; background-color: #2A002A; }
+        th.mes-header { text-align: center; background-color: #2A002A; }
 
-        footer { text-align: center; color: var(--text-secondary); font-size: 12px; margin-top: 30px; padding-bottom: 20px; }
+        footer { text-align: center; color: var(--text-secondary); font-size: 12px; margin-top: 30px; padding-bottom: 20px; transition: color 0.3s; }
 
-        /* MODO DE EXPORTAÇÃO (PNG / PDF) */
+        /* MODO DE EXPORTAÇÃO (PNG / PDF) - Bloqueio total de transições/animações e forçar clareza */
+        body.exporting * { transition: none !important; animation: none !important; }
         body.exporting .sidebar, body.exporting .nav-bar { display: none !important; }
         body.exporting .app-container { display: block; }
         body.exporting .main-content { padding: 0 !important; width: 100%; background: white !important; }
-        body.exporting .grafico-card, body.exporting .kpi-card { border: 1px solid #EEE !important; box-shadow: none !important; }
+        body.exporting .grafico-card, body.exporting .kpi-card { border: 1px solid #E2E8F0 !important; box-shadow: none !important; }
         body.exporting header { position: static !important; }
 
-        /* MODO DE IMPRESSÃO (Nativo do Navegador) */
+        /* MODO DE IMPRESSÃO (Nativo) - Layout Ajustado e Flexbox */
         @media print {
             .sidebar, .nav-bar, header, footer, .quick-links, .export-buttons { display: none !important; }
             body, .main-content, .app-container { background: white !important; margin: 0 !important; padding: 0 !important; width: 100% !important; display: block !important; }
-            .graficos { display: flex; flex-direction: column; gap: 20px; page-break-inside: avoid; }
-            .grafico-card, .kpi-card { border: 1px solid #CCC !important; box-shadow: none !important; border-radius: 8px !important; page-break-inside: avoid; }
-            @page { size: landscape; margin: 10mm; }
+            
+            /* Ajuste de layout para Landscape */
+            .kpis { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; page-break-inside: avoid; }
+            .kpi-card { flex: 1; margin: 0; padding: 15px; border: 1px solid #CCC !important; box-shadow: none !important; border-radius: 8px !important; }
+            
+            .graficos { display: flex; flex-direction: row; justify-content: space-between; gap: 15px; margin-bottom: 15px; page-break-inside: avoid; }
+            .grafico-card { flex: 1; margin: 0; padding: 15px; border: 1px solid #CCC !important; box-shadow: none !important; border-radius: 8px !important; page-break-inside: avoid; }
+            .grafico-linha-unica { margin-bottom: 15px; page-break-inside: avoid; }
+            
+            /* Limita a altura e largura para caber no papel */
+            canvas { max-height: 280px !important; }
+            #graficoMensal { max-height: 300px !important; }
+            #graficoCentroCusto { max-width: 250px !important; max-height: 250px !important; margin: 0 auto; display: block; }
+            
+            @page { size: landscape; margin: 5mm; }
         }
 
         .export-buttons { display: flex; gap: 8px; margin-left: auto; }
@@ -161,50 +214,54 @@
         <header>
             <h1>ON<span>TIME</span> | Resumo Comparativo RB / Custo</h1>
         </header>
-        <div class="nav-bar">
-            <div class="nav-tab active" onclick="mudarPagina('dashboard')">📊 Dashboard</div>
-            <div class="nav-tab" onclick="mudarPagina('relatorio')">📑 Relatório Mensal</div>
-            <div style="flex:1"></div>
-            <div id="exportButtonsContainer" class="export-buttons"></div>
-            <button class="btn icon-only" id="atualizarBtn" onclick="carregarDados()" title="Atualizar dados">
-                <svg id="icone-atualizar" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
-                    <path d="M21 3v5h-5"></path>
-                </svg>
-            </button>
-        </div>
-
-        <div id="page-dashboard" class="page active">
-            <div class="empty-state-msg">
-                <h2>Ops, não há dados!</h2>
-                <p>Nenhum dado encontrado com a combinação de filtros atuais. Tente alterar o cliente, mês ou centro de custo.</p>
+        
+        <div class="content-body">
+            <div class="nav-bar">
+                <div class="nav-tab active" onclick="mudarPagina('dashboard')">📊 Dashboard</div>
+                <div class="nav-tab" onclick="mudarPagina('relatorio')">📑 Relatório Mensal</div>
+                <div style="flex:1"></div>
+                <button class="btn icon-only" onclick="toggleDarkMode()" title="Alternar Modo Escuro">🌓</button>
+                <div id="exportButtonsContainer" class="export-buttons"></div>
+                <button class="btn icon-only" id="atualizarBtn" onclick="carregarDados()" title="Atualizar dados">
+                    <svg id="icone-atualizar" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                        <path d="M21 3v5h-5"></path>
+                    </svg>
+                </button>
             </div>
 
-            <div class="kpis">
-                <div class="kpi-card"><h3>Receita Bruta</h3><div class="valor" id="rbTotal">R$ 0</div><div class="variacao" id="varRb">--</div></div>
-                <div class="kpi-card"><h3>Custo Total</h3><div class="valor" id="custoTotal">R$ 0</div><div class="variacao" id="varCusto">--</div></div>
-                <div class="kpi-card"><h3>Margem Bruta</h3><div class="valor" id="margem">0%</div><div class="variacao" id="varMargem">--</div></div>
-            </div>
-            <div class="grafico-linha-unica"><div class="grafico-card"><h2>📈 Receita x Custo Mensal</h2><canvas id="graficoMensal"></canvas></div></div>
-            <div class="graficos">
-                <div class="grafico-card"><h2>📅 Total gerado por Trimestre</h2><canvas id="graficoTrimestre"></canvas></div>
-                <div class="grafico-card"><h2>🏆 Soma Realizada por Cliente</h2><canvas id="graficoTop10Horizontal"></canvas></div>
-            </div>
-            <div class="graficos">
-                <div class="grafico-card"><h2>🥧 Percentual Acumulado C.C.</h2><canvas id="graficoCentroCusto"></canvas></div>
-                <div class="grafico-card"><h2>📊 Receita/Custo por Centro de Custo</h2><canvas id="graficoCCBarras"></canvas></div>
-            </div>
-        </div>
+            <div id="page-dashboard" class="page active">
+                <div class="empty-state-msg">
+                    <h2>Ops, não há dados!</h2>
+                    <p>Nenhum dado encontrado com a combinação de filtros atuais. Tente alterar o cliente, mês ou centro de custo.</p>
+                </div>
 
-        <div id="page-relatorio" class="page">
-            <div class="tabela-container">
-                <table id="tabelaRelatorioMensal">
-                    <thead id="theadRelatorio"></thead>
-                    <tbody id="tbodyRelatorioMensal"></tbody>
-                </table>
+                <div class="kpis">
+                    <div class="kpi-card"><h3>Receita Bruta</h3><div class="valor" id="rbTotal">R$ 0</div><div class="variacao" id="varRb">--</div></div>
+                    <div class="kpi-card"><h3>Custo Total</h3><div class="valor" id="custoTotal">R$ 0</div><div class="variacao" id="varCusto">--</div></div>
+                    <div class="kpi-card"><h3>Margem Bruta</h3><div class="valor" id="margem">0%</div><div class="variacao" id="varMargem">--</div></div>
+                </div>
+                <div class="grafico-linha-unica"><div class="grafico-card"><h2>📈 Receita x Custo Mensal</h2><canvas id="graficoMensal"></canvas></div></div>
+                <div class="graficos">
+                    <div class="grafico-card"><h2>📅 Total gerado por Trimestre</h2><canvas id="graficoTrimestre"></canvas></div>
+                    <div class="grafico-card"><h2>🏆 Soma Realizada por Cliente</h2><canvas id="graficoTop10Horizontal"></canvas></div>
+                </div>
+                <div class="graficos">
+                    <div class="grafico-card"><h2>🥧 Percentual Acumulado C.C.</h2><canvas id="graficoCentroCusto"></canvas></div>
+                    <div class="grafico-card"><h2>📊 Receita/Custo por Centro de Custo</h2><canvas id="graficoCCBarras"></canvas></div>
+                </div>
             </div>
+
+            <div id="page-relatorio" class="page">
+                <div class="tabela-container">
+                    <table id="tabelaRelatorioMensal">
+                        <thead id="theadRelatorio"></thead>
+                        <tbody id="tbodyRelatorioMensal"></tbody>
+                    </table>
+                </div>
+            </div>
+            <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v46.0 (Exportação Instantânea)</footer>
         </div>
-        <footer>Dados atualizados em <span id="dataAtual"></span> - Ontime v42.0 (Tema Claro Pro)</footer>
     </div>
 </div>
 
@@ -239,12 +296,40 @@
     ];
     window.getCCSub = (op) => auxiliar.find(a=>a.operacao===op) || { cc:"00000000", centro:"Outros", sub:op };
 
-    // Funções auxiliares base
+    document.addEventListener("DOMContentLoaded", () => {
+        if(localStorage.getItem('ontime-theme') === 'dark') document.body.classList.add('dark-mode');
+    });
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('ontime-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        aplicarFiltrosDashboard();
+    }
+
+    let wasDarkBeforePrint = false;
+    window.addEventListener('beforeprint', () => {
+        wasDarkBeforePrint = document.body.classList.contains('dark-mode');
+        if (wasDarkBeforePrint) {
+            document.body.classList.remove('dark-mode');
+            aplicarFiltrosDashboard(true); 
+        }
+    });
+    window.addEventListener('afterprint', () => {
+        if (wasDarkBeforePrint) {
+            document.body.classList.add('dark-mode');
+            aplicarFiltrosDashboard(); 
+        }
+    });
+
+    function getChartTextColor() { return document.body.classList.contains('dark-mode') ? '#E0E0E0' : '#2C3E50'; }
+    function getChartGridColor() { return document.body.classList.contains('dark-mode') ? '#333344' : '#E2E8F0'; }
+    function getChartTooltipBg() { return document.body.classList.contains('dark-mode') ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.95)'; }
+    function getChartTooltipText() { return document.body.classList.contains('dark-mode') ? '#FFF' : '#2C3E50'; }
+
     function normalizarTexto(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : str; }
     function limparTextoCsv(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s-]/g, "").trim() : ""; }
     function normalizarMes(m) { return m ? normalizarTexto(m) : m; }
     function formatarNumeroInteiro(v){ return v.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
-    
     function getCorModoBg() { return window.currentMode === 'Custo' ? 'rgba(255, 110, 0, 0.8)' : 'rgba(60, 0, 60, 0.8)'; }
     function getCorModoBorder() { return window.currentMode === 'Custo' ? '#D95D00' : '#2A002A'; }
     
@@ -297,14 +382,9 @@
             }).filter(d=>d.cliente && d.operacao);
             
             window.filtroAno = obterAnoMaisRecente();
-            window.filtroMeses.clear();
-            window.filtroClientes.clear();
-            window.filtroCentros.clear();
+            window.filtroMeses.clear(); window.filtroClientes.clear(); window.filtroCentros.clear();
             window.currentMode = 'RB';
-            construirSidebar();
-            aplicarFiltrosDashboard();
-            atualizarRelatorioMensal();
-            
+            construirSidebar(); aplicarFiltrosDashboard(); atualizarRelatorioMensal();
             if(btnIcon) btnIcon.classList.remove('spin-anim');
             if(btn) btn.disabled = false;
         } catch(e){ 
@@ -466,7 +546,7 @@
         });
     }
 
-    function aplicarFiltrosDashboard() {
+    function aplicarFiltrosDashboard(sync = false) {
         let dadosBase = [...window.dadosCompletos];
         if(window.filtroAno) dadosBase = dadosBase.filter(d => (d.mes.split('/')[1] || '').trim() === window.filtroAno);
         if(window.filtroMeses.size) dadosBase = dadosBase.filter(d => window.filtroMeses.has(d.mes.split('/')[0].trim()));
@@ -492,11 +572,11 @@
         } else {
             containerPainel.classList.remove('is-empty');
             atualizarKPIs(dadosFiltrados);
-            atualizarGraficoMensal(dadosMensal);
-            atualizarGraficoTop10Horizontal(dadosClientes);
-            atualizarGraficoTrimestre(dadosFiltrados);
-            atualizarGraficoCentroCusto(dadosFiltrados);
-            atualizarGraficoCCBarras(dadosFiltrados);
+            atualizarGraficoMensal(dadosMensal, sync);
+            atualizarGraficoTop10Horizontal(dadosClientes, sync);
+            atualizarGraficoTrimestre(dadosFiltrados, sync);
+            atualizarGraficoCentroCusto(dadosFiltrados, sync);
+            atualizarGraficoCCBarras(dadosFiltrados, sync);
         }
     }
 
@@ -532,9 +612,8 @@
         }
     }
 
-    // --- ANIMAÇÕES FLUIDAS (CHART.UPDATE) ---
-
-    function atualizarGraficoMensal(dados) {
+    // O parâmetro 'sync' força a renderização em 0 segundos ('none') no Chart.js
+    function atualizarGraficoMensal(dados, sync = false) {
         const mesesMap = {};
         dados.forEach(d => {
             if(!mesesMap[d.mes]) mesesMap[d.mes] = { receita:0, custo:0 };
@@ -548,13 +627,21 @@
         });
         const receita = mesesOrd.map(m=>mesesMap[m].receita);
         const custo = mesesOrd.map(m=>mesesMap[m].custo);
-        const maxVal = Math.max(...receita,...custo)*1.1;
+        const maxVal = Math.max(...receita,...custo)*1.15;
 
         if (graficoMensal) {
             graficoMensal.data.labels = mesesOrd;
             graficoMensal.data.datasets[0].data = receita;
             graficoMensal.data.datasets[1].data = custo;
-            graficoMensal.update();
+            graficoMensal.options.scales.y.max = maxVal;
+            graficoMensal.options.plugins.datalabels.color = getChartTextColor();
+            graficoMensal.options.scales.x.ticks.color = getChartTextColor();
+            graficoMensal.options.scales.y.ticks.color = getChartTextColor();
+            graficoMensal.options.scales.y.grid.color = getChartGridColor();
+            graficoMensal.options.plugins.tooltip.backgroundColor = getChartTooltipBg();
+            graficoMensal.options.plugins.tooltip.titleColor = getChartTooltipText();
+            graficoMensal.options.plugins.tooltip.bodyColor = getChartTooltipText();
+            graficoMensal.update(sync ? 'none' : undefined);
         } else {
             const ctx = document.getElementById('graficoMensal').getContext('2d');
             graficoMensal = new Chart(ctx,{
@@ -564,27 +651,28 @@
                     { label:'Custo', data:custo, backgroundColor:'rgba(255,110,0,0.85)', borderColor: '#D95D00', borderWidth: 1, borderRadius:4 }
                 ] },
                 options:{
+                    layout: { padding: { top: 30 } },
                     responsive:true, maintainAspectRatio:false, barPercentage:0.7, categoryPercentage:0.8,
                     plugins:{
                         legend:{display:false},
-                        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${formatarNumeroInteiro(ctx.raw)}`}},
-                        datalabels:{anchor:'end',align:'top',offset:4,formatter:v=>formatarNumeroInteiro(v),color:'#2C3E50',font:{weight:'bold',size:10}}
+                        tooltip:{ backgroundColor: getChartTooltipBg(), titleColor: getChartTooltipText(), bodyColor: getChartTooltipText(), callbacks:{label:ctx=>`${ctx.dataset.label}: ${formatarNumeroInteiro(ctx.raw)}`} },
+                        datalabels:{anchor:'end',align:'top',offset:4,formatter:v=>formatarNumeroInteiro(v),color:getChartTextColor(),font:{weight:'bold',size:10}}
                     },
                     scales:{
-                        y:{ beginAtZero:true, max:maxVal, grid:{color:'#E2E8F0'}, border:{display:false}, ticks:{callback:v=>formatarNumeroInteiro(v),font:{size:11},color:'#5A5A6E'} },
-                        x:{ grid:{display:false}, border:{display:false}, ticks:{font:{weight:'600',size:11},color:'#2C3E50'} }
+                        y:{ beginAtZero:true, max:maxVal, grid:{color:getChartGridColor()}, border:{display:false}, ticks:{callback:v=>formatarNumeroInteiro(v),font:{size:11},color:getChartTextColor()} },
+                        x:{ grid:{display:false}, border:{display:false}, ticks:{font:{weight:'600',size:11},color:getChartTextColor()} }
                     }
                 }, plugins:[ChartDataLabels]
             });
         }
     }
 
-    function atualizarGraficoTop10Horizontal(dados){
+    function atualizarGraficoTop10Horizontal(dados, sync = false){
         const clientesMap = {};
         dados.forEach(d=>{ clientesMap[d.cliente] = (clientesMap[d.cliente]||0) + (window.currentMode==='RB'?d.rb:d.custo); });
         const top10 = Object.entries(clientesMap).filter(([_,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,10).reverse();
         const labels=top10.map(c=>c[0]), data=top10.map(c=>c[1]);
-        const maxVal=Math.max(...data)*1.1;
+        const maxVal=Math.max(...data)*1.15;
 
         if (graficoTop10Horizontal) {
             graficoTop10Horizontal.data.labels = labels;
@@ -592,20 +680,32 @@
             graficoTop10Horizontal.data.datasets[0].data = data;
             graficoTop10Horizontal.data.datasets[0].backgroundColor = getCorModoBg();
             graficoTop10Horizontal.data.datasets[0].borderColor = getCorModoBorder();
-            graficoTop10Horizontal.update();
+            graficoTop10Horizontal.options.scales.x.max = maxVal;
+            graficoTop10Horizontal.options.plugins.datalabels.color = getChartTextColor();
+            graficoTop10Horizontal.options.scales.x.ticks.color = getChartTextColor();
+            graficoTop10Horizontal.options.scales.x.grid.color = getChartGridColor();
+            graficoTop10Horizontal.options.scales.y.ticks.color = getChartTextColor();
+            graficoTop10Horizontal.options.plugins.tooltip.backgroundColor = getChartTooltipBg();
+            graficoTop10Horizontal.options.plugins.tooltip.titleColor = getChartTooltipText();
+            graficoTop10Horizontal.options.plugins.tooltip.bodyColor = getChartTooltipText();
+            graficoTop10Horizontal.update(sync ? 'none' : undefined);
         } else {
             const ctx = document.getElementById('graficoTop10Horizontal').getContext('2d');
             graficoTop10Horizontal = new Chart(ctx,{
                 type:'bar', data:{labels,datasets:[{label:window.currentMode==='RB'?'Receita':'Custo',data,backgroundColor:getCorModoBg(),borderColor:getCorModoBorder(),borderWidth:1,borderRadius:4}]},
                 options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, layout:{padding:{right:80}},
-                    plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>`${window.currentMode==='RB'?'Receita':'Custo'}: ${formatarNumeroInteiro(ctx.raw)}`}}, datalabels:{anchor:'end',align:'right',offset:6,formatter:v=>formatarNumeroInteiro(v),color:'#2C3E50',font:{weight:'bold',size:11}} },
-                    scales:{ x:{ beginAtZero:true, max:maxVal, grid:{color:'#E2E8F0'}, border:{display:false}, ticks:{callback:v=>formatarNumeroInteiro(v),font:{size:11},color:'#5A5A6E'} }, y:{ grid:{display:false}, border:{display:false}, ticks:{font:{weight:'600',size:10},color:'#2C3E50'} } }
+                    plugins:{ 
+                        legend:{display:false}, 
+                        tooltip:{backgroundColor: getChartTooltipBg(), titleColor: getChartTooltipText(), bodyColor: getChartTooltipText(), callbacks:{label:ctx=>`${window.currentMode==='RB'?'Receita':'Custo'}: ${formatarNumeroInteiro(ctx.raw)}`}}, 
+                        datalabels:{anchor:'end',align:'right',offset:6,formatter:v=>formatarNumeroInteiro(v),color:getChartTextColor(),font:{weight:'bold',size:11}} 
+                    },
+                    scales:{ x:{ beginAtZero:true, max:maxVal, grid:{color:getChartGridColor()}, border:{display:false}, ticks:{callback:v=>formatarNumeroInteiro(v),font:{size:11},color:getChartTextColor()} }, y:{ grid:{display:false}, border:{display:false}, ticks:{font:{weight:'600',size:10},color:getChartTextColor()} } }
                 }, plugins:[ChartDataLabels]
             });
         }
     }
 
-    function atualizarGraficoTrimestre(dados){
+    function atualizarGraficoTrimestre(dados, sync = false){
         const trimestres = { '1º Trim':0, '2º Trim':0, '3º Trim':0, '4º Trim':0 };
         dados.forEach(d=>{
             const partes = d.mes.split('/');
@@ -623,7 +723,7 @@
             else if(num>=10 && num<=12) trimestres['4º Trim'] += valor;
         });
         const labels=Object.keys(trimestres), data=Object.values(trimestres);
-        const maxVal=Math.max(...data)*1.1;
+        const maxVal=Math.max(...data)*1.15;
 
         if (graficoTrimestre) {
             graficoTrimestre.data.labels = labels;
@@ -631,20 +731,32 @@
             graficoTrimestre.data.datasets[0].data = data;
             graficoTrimestre.data.datasets[0].backgroundColor = getCorModoBg();
             graficoTrimestre.data.datasets[0].borderColor = getCorModoBorder();
-            graficoTrimestre.update();
+            graficoTrimestre.options.scales.y.max = maxVal;
+            graficoTrimestre.options.plugins.datalabels.color = getChartTextColor();
+            graficoTrimestre.options.scales.x.ticks.color = getChartTextColor();
+            graficoTrimestre.options.scales.y.ticks.color = getChartTextColor();
+            graficoTrimestre.options.scales.y.grid.color = getChartGridColor();
+            graficoTrimestre.options.plugins.tooltip.backgroundColor = getChartTooltipBg();
+            graficoTrimestre.options.plugins.tooltip.titleColor = getChartTooltipText();
+            graficoTrimestre.options.plugins.tooltip.bodyColor = getChartTooltipText();
+            graficoTrimestre.update(sync ? 'none' : undefined);
         } else {
             const ctx=document.getElementById('graficoTrimestre').getContext('2d');
             graficoTrimestre = new Chart(ctx,{
                 type:'bar', data:{labels,datasets:[{label:window.currentMode==='RB'?'Receita':'Custo',data,backgroundColor:getCorModoBg(),borderColor:getCorModoBorder(),borderWidth:1,borderRadius:4}]},
-                options:{ responsive:true, maintainAspectRatio:false, barPercentage:0.6, categoryPercentage:0.7,
-                    plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>`${window.currentMode==='RB'?'Receita':'Custo'}: ${formatarNumeroInteiro(ctx.raw)}`}}, datalabels:{anchor:'end',align:'top',offset:4,formatter:v=>formatarNumeroInteiro(v),color:'#2C3E50',font:{weight:'bold',size:11}} },
-                    scales:{ y:{ beginAtZero:true, max:maxVal, grid:{color:'#E2E8F0'}, border:{display:false}, ticks:{callback:v=>formatarNumeroInteiro(v),font:{size:11},color:'#5A5A6E'} }, x:{ grid:{display:false}, border:{display:false}, ticks:{font:{weight:'600',size:11},color:'#2C3E50'} } }
+                options:{ layout: { padding: { top: 30 } }, responsive:true, maintainAspectRatio:false, barPercentage:0.6, categoryPercentage:0.7,
+                    plugins:{ 
+                        legend:{display:false}, 
+                        tooltip:{backgroundColor: getChartTooltipBg(), titleColor: getChartTooltipText(), bodyColor: getChartTooltipText(), callbacks:{label:ctx=>`${window.currentMode==='RB'?'Receita':'Custo'}: ${formatarNumeroInteiro(ctx.raw)}`}}, 
+                        datalabels:{anchor:'end',align:'top',offset:4,formatter:v=>formatarNumeroInteiro(v),color:getChartTextColor(),font:{weight:'bold',size:11}} 
+                    },
+                    scales:{ y:{ beginAtZero:true, max:maxVal, grid:{color:getChartGridColor()}, border:{display:false}, ticks:{callback:v=>formatarNumeroInteiro(v),font:{size:11},color:getChartTextColor()} }, x:{ grid:{display:false}, border:{display:false}, ticks:{font:{weight:'600',size:11},color:getChartTextColor()} } }
                 }, plugins:[ChartDataLabels]
             });
         }
     }
 
-    function atualizarGraficoCentroCusto(dados){
+    function atualizarGraficoCentroCusto(dados, sync = false){
         const total = dados.reduce((a,d)=>a+(window.currentMode==='RB'?d.rb:d.custo),0);
         const ccMap={};
         dados.forEach(d=>{ const{centro}=window.getCCSub(d.operacao); ccMap[centro] = (ccMap[centro]||0) + (window.currentMode==='RB'?d.rb:d.custo); });
@@ -662,24 +774,31 @@
             graficoCentroCusto.data.labels = labels;
             graficoCentroCusto.data.datasets[0].data = data;
             graficoCentroCusto.data.datasets[0].backgroundColor = baseColors;
-            graficoCentroCusto.update();
+            graficoCentroCusto.options.plugins.tooltip.backgroundColor = getChartTooltipBg();
+            graficoCentroCusto.options.plugins.tooltip.titleColor = getChartTooltipText();
+            graficoCentroCusto.options.plugins.tooltip.bodyColor = getChartTooltipText();
+            graficoCentroCusto.update(sync ? 'none' : undefined);
         } else {
             const ctx=document.getElementById('graficoCentroCusto').getContext('2d');
             graficoCentroCusto = new Chart(ctx,{
-                type:'doughnut', data:{labels,datasets:[{data,backgroundColor:baseColors,borderColor:'#fff',borderWidth:3}]},
+                type:'doughnut', data:{labels,datasets:[{data,backgroundColor:baseColors,borderColor:'#fff',borderWidth:2}]},
                 options:{ responsive:true, maintainAspectRatio:false, cutout: '65%',
-                    plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${formatarNumeroInteiro(ctx.raw)} (${((ctx.raw/total)*100).toFixed(1)}%)`}}, datalabels:{ formatter:(v,ctx)=>`${ctx.chart.data.labels[ctx.dataIndex]}\n${((v/total)*100).toFixed(1)}%`, color:'#fff', font:{weight:'bold',size:10}, backgroundColor:'rgba(0,0,0,0.6)', borderRadius:4, padding:4, textAlign:'center' } }
+                    plugins:{ 
+                        legend:{display:false}, 
+                        tooltip:{backgroundColor: getChartTooltipBg(), titleColor: getChartTooltipText(), bodyColor: getChartTooltipText(), callbacks:{label:ctx=>`${ctx.label}: ${formatarNumeroInteiro(ctx.raw)} (${((ctx.raw/total)*100).toFixed(1)}%)`}}, 
+                        datalabels:{ formatter:(v,ctx)=>`${ctx.chart.data.labels[ctx.dataIndex]}\n${((v/total)*100).toFixed(1)}%`, color:'#fff', font:{weight:'bold',size:10}, backgroundColor:'rgba(0,0,0,0.6)', borderRadius:4, padding:4, textAlign:'center' } 
+                    }
                 }, plugins:[ChartDataLabels]
             });
         }
     }
 
-    function atualizarGraficoCCBarras(dados){
+    function atualizarGraficoCCBarras(dados, sync = false){
         const ccMap={};
         dados.forEach(d=>{ const{centro}=window.getCCSub(d.operacao); ccMap[centro] = (ccMap[centro]||0) + (window.currentMode==='RB'?d.rb:d.custo); });
         const sorted=Object.entries(ccMap).sort((a,b)=>b[1]-a[1]);
         const labels=sorted.map(s=>s[0]), data=sorted.map(s=>s[1]);
-        const maxVal=Math.max(...data)*1.1;
+        const maxVal=Math.max(...data)*1.15;
 
         if (graficoCCBarras) {
             graficoCCBarras.data.labels = labels;
@@ -687,20 +806,31 @@
             graficoCCBarras.data.datasets[0].data = data;
             graficoCCBarras.data.datasets[0].backgroundColor = getCorModoBg();
             graficoCCBarras.data.datasets[0].borderColor = getCorModoBorder();
-            graficoCCBarras.update();
+            graficoCCBarras.options.scales.y.max = maxVal;
+            graficoCCBarras.options.plugins.datalabels.color = getChartTextColor();
+            graficoCCBarras.options.scales.x.ticks.color = getChartTextColor();
+            graficoCCBarras.options.scales.y.ticks.color = getChartTextColor();
+            graficoCCBarras.options.scales.y.grid.color = getChartGridColor();
+            graficoCCBarras.options.plugins.tooltip.backgroundColor = getChartTooltipBg();
+            graficoCCBarras.options.plugins.tooltip.titleColor = getChartTooltipText();
+            graficoCCBarras.options.plugins.tooltip.bodyColor = getChartTooltipText();
+            graficoCCBarras.update(sync ? 'none' : undefined);
         } else {
             const ctx=document.getElementById('graficoCCBarras').getContext('2d');
             graficoCCBarras = new Chart(ctx,{
                 type:'bar', data:{labels,datasets:[{label:window.currentMode==='RB'?'Receita':'Custo',data,backgroundColor:getCorModoBg(),borderColor:getCorModoBorder(),borderWidth:1,borderRadius:4}]},
-                options:{ responsive:true, maintainAspectRatio:false, barPercentage:0.7, categoryPercentage:0.8,
-                    plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>`${window.currentMode==='RB'?'Receita':'Custo'}: ${formatarNumeroInteiro(ctx.raw)}`}}, datalabels:{anchor:'end',align:'top',offset:4,formatter:v=>formatarNumeroInteiro(v),color:'#2C3E50',font:{weight:'bold',size:10}} },
-                    scales:{ y:{ beginAtZero:true, max:maxVal, grid:{color:'#E2E8F0'}, border:{display:false}, ticks:{callback:v=>formatarNumeroInteiro(v),font:{size:11},color:'#5A5A6E'} }, x:{ grid:{display:false}, border:{display:false}, ticks:{font:{weight:'600',size:11},color:'#2C3E50'} } }
+                options:{ layout: { padding: { top: 30 } }, responsive:true, maintainAspectRatio:false, barPercentage:0.7, categoryPercentage:0.8,
+                    plugins:{ 
+                        legend:{display:false}, 
+                        tooltip:{backgroundColor: getChartTooltipBg(), titleColor: getChartTooltipText(), bodyColor: getChartTooltipText(), callbacks:{label:ctx=>`${window.currentMode==='RB'?'Receita':'Custo'}: ${formatarNumeroInteiro(ctx.raw)}`}}, 
+                        datalabels:{anchor:'end',align:'top',offset:4,formatter:v=>formatarNumeroInteiro(v),color:getChartTextColor(),font:{weight:'bold',size:10}} 
+                    },
+                    scales:{ y:{ beginAtZero:true, max:maxVal, grid:{color:getChartGridColor()}, border:{display:false}, ticks:{callback:v=>formatarNumeroInteiro(v),font:{size:11},color:getChartTextColor()} }, x:{ grid:{display:false}, border:{display:false}, ticks:{font:{weight:'600',size:11},color:getChartTextColor()} } }
                 }, plugins:[ChartDataLabels]
             });
         }
     }
 
-    // --- TABELA DE RELATÓRIO MENSAL ---
     window.ordenarTabelaRelatorio = (mes, tipo) => {
         if(window.sortRelatorio.mes === mes && window.sortRelatorio.tipo === tipo) window.sortRelatorio.asc = !window.sortRelatorio.asc;
         else { window.sortRelatorio.mes = mes; window.sortRelatorio.tipo = tipo; window.sortRelatorio.asc = false; }
@@ -759,8 +889,6 @@
         document.getElementById('tbodyRelatorioMensal').innerHTML = tbody;
     }
 
-    // --- EXPORTAÇÕES OTIMIZADAS ---
-
     function exportarCSV() {
         let dados = window.dadosCompletos;
         if(window.filtroAnoRelatorio) dados = dados.filter(d=>(d.mes.split('/')[1] || '').trim()===window.filtroAnoRelatorio);
@@ -784,18 +912,15 @@
         
         const linhas = [];
         Object.values(grupos).forEach(g=>{
-            // Aplica limpeza de acentos para o Excel
             const linha = [ limparTextoCsv(g.cc), limparTextoCsv(g.centro), limparTextoCsv(g.sub), limparTextoCsv(g.cliente) ];
             mesesLista.forEach(m=>{
                 const vals = g.meses[m] || {rb:0,custo:0};
-                // Formato contábil brasileiro: ex. 1234,50 (sem separador de milhar)
                 linha.push(vals.rb.toFixed(2).replace('.',','));
                 linha.push(vals.custo.toFixed(2).replace('.',','));
             });
             linhas.push(linha);
         });
         const csv = [cabecalho, ...linhas].map(row=>row.join(';')).join('\n');
-        // Adiciona BOM para forçar o Excel a ler UTF-8 corretamente
         const blob = new Blob(["\uFEFF" + csv], {type:'text/csv;charset=utf-8;'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url;
@@ -803,46 +928,71 @@
         a.click(); URL.revokeObjectURL(url);
     }
 
-    function exportarPDF() {
+    // --- NOVA FUNÇÃO DE EXPORTAÇÃO A PROVA DE FANTASMAS ---
+    function prepararExportacao(acaoExportacao) {
+        const wasDark = document.body.classList.contains('dark-mode');
+        
+        // 1. Injeta CSS para matar qualquer tipo de animação e transição instantaneamente
+        const styleNoTransition = document.createElement('style');
+        styleNoTransition.innerHTML = '* { transition: none !important; animation: none !important; }';
+        document.head.appendChild(styleNoTransition);
+
+        // 2. Transforma o layout para o Modo Claro
+        if (wasDark) document.body.classList.remove('dark-mode');
         document.body.classList.add('exporting');
-        // Pequeno atraso para o navegador aplicar as classes CSS e renderizar sem a sidebar
+        
+        // 3. O SEGREDO: Atualiza os gráficos de forma síncrona passando 'true' (animação zero do Chart.js)
+        aplicarFiltrosDashboard(true);
+        
+        // 4. Dá um tempinho mínimo apenas para o navegador repintar a tela na memória antes da foto
         setTimeout(() => {
+            acaoExportacao(() => {
+                // 5. CALLBACK DE RESTAURAÇÃO: Devolve tudo ao normal após o PDF/PNG
+                document.body.classList.remove('exporting');
+                if (wasDark) document.body.classList.add('dark-mode');
+                
+                // Recarrega os gráficos para aplicar o tema correto novamente
+                aplicarFiltrosDashboard();
+                
+                // Limpa o bloqueio de animações
+                setTimeout(() => document.head.removeChild(styleNoTransition), 50);
+            });
+        }, 300);
+    }
+
+    function exportarPDF() {
+        prepararExportacao((finalizar) => {
             const element = document.getElementById('print-area');
             html2canvas(element, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-                document.body.classList.remove('exporting');
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
-                // PDF em A4 Paisagem
                 const pdf = new jsPDF('landscape', 'mm', 'a4');
-                const pdfWidth = 297; // largura A4 landscape
-                const pdfHeight = 210; // altura A4 landscape
+                const pdfWidth = 297; 
+                const pdfHeight = 210; 
                 
-                // Calcula proporção para não distorcer
                 const imgProps = pdf.getImageProperties(imgData);
                 const ratio = imgProps.width / imgProps.height;
                 const finalHeight = pdfWidth / ratio;
-                
-                // Centraliza verticalmente se couber, se não parte do topo (0)
                 const yPosition = finalHeight < pdfHeight ? (pdfHeight - finalHeight) / 2 : 0;
                 
                 pdf.addImage(imgData, 'PNG', 0, yPosition, pdfWidth, finalHeight, undefined, 'FAST');
                 pdf.save('Dashboard_Ontime.pdf');
-            }).catch(err => { document.body.classList.remove('exporting'); console.error(err); });
-        }, 300);
+                finalizar();
+            }).catch(err => { console.error(err); finalizar(); });
+        });
     }
 
     function exportarPNG() {
-        document.body.classList.add('exporting');
-        setTimeout(() => {
+        prepararExportacao((finalizar) => {
             const element = document.getElementById('print-area');
             html2canvas(element, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-                document.body.classList.remove('exporting');
                 const link = document.createElement('a');
                 link.download = 'Dashboard_Ontime.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-            }).catch(err => { document.body.classList.remove('exporting'); console.error(err); });
-        }, 300);
+                finalizar();
+            }).catch(err => { console.error(err); finalizar(); });
+        });
     }
 
     function imprimir() { window.print(); }

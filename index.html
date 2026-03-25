@@ -357,7 +357,7 @@
         { operacao: "LM_GT", cc: "30010102", centro: "OTX B2B", sub: "LM_GT" },
         { operacao: "LM_KA", cc: "30010102", centro: "OTX B2B", sub: "LM_KA" },
         { operacao: "LM_SW", cc: "30010102", centro: "OTX B2B", sub: "LM_SW" },
-        { operacao: "LM", cc: "30010101", centro: "APOIOS", sub: "LM" }
+        { operacao: "APOIOS", cc: "30010101", centro: "OTX B2C", sub: "LM" }
     ];
     window.getCCSub = (op) => auxiliar.find(a=>a.operacao===op) || { cc:"00000000", centro:"Outros", sub:op };
 
